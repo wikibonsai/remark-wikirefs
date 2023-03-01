@@ -74,6 +74,17 @@ export const syntaxWikiAttrs = (function (opts?: Partial<WikiRefsOptions>): Exte
     // push, splice, sliceSerialize
     // collect indices of relevant attr events
     while (++index < events.length) {
+      // mark markers and wikiattr newlines for deletion
+      // (this will also remove wikilink markers)
+      // const isWikiType: boolean = (events[index][1].type.indexOf('wiki') === 0);
+      // const isMarkerType: boolean = (events[index][1].type.indexOf('Marker') > 0);
+      // const isWikiLineEnding: boolean = (events[index][1].type === WikiRefToken.listLineEnding);
+      // if ((isWikiType && isMarkerType) || isWikiLineEnding) {
+      //   attrToss.push(index);
+      //   // todo: 'data'...?
+      //   // ref: https://github.com/micromark/micromark/blob/main/packages/micromark-core-commonmark/dev/lib/label-end.js#L52
+      //   token.type = UnifiedTypeToken.data;
+      // }
       // convert wikiattr token types to caml-friendly token types
       if (events[index][1].type.indexOf(WikiRefToken.wikiAttr) === 0) {
         // markers
@@ -216,6 +227,16 @@ export const syntaxWikiAttrs = (function (opts?: Partial<WikiRefsOptions>): Exte
     // 'continue': continue on to the next function ('ok')
 
     function start (code: Code): State | void {
+      // if (
+      //   // Exit if there’s stuff before.
+      //   // self.previous !== codes.eof ||
+      //   // Exit if not in the first content that is the first child of a list
+      //   // item.
+      //   // !self._gfmTasklistFirstContentOfListItem
+      //   !self._gfmTableDynamicInterruptHack
+      // ) {
+      //   return nok(code);
+      // }
       // 'wikiattr' must start at the start of a line
       // from: https://github.com/micromark/micromark-extension-frontmatter/blob/main/dev/lib/syntax.js#L75
       const position: Point = self.now();
@@ -223,14 +244,39 @@ export const syntaxWikiAttrs = (function (opts?: Partial<WikiRefsOptions>): Exte
       if (!lineFirstChar) {
         return nok(code);
       }
+
+      // if we're interrupting, kick out
+      // if (self.interrupt) {
+      //   self._gfmTableDynamicInterruptHack = false;
+      //   // return nok;
+      // }
+
+      // from: https://github.com/micromark/micromark/blob/main/packages/micromark-core-commonmark/dev/lib/code-indented.js#L91
+      // if this is a lazy line, we should interrupt
+      // if (self.parser.lazy[position.line]) {
+      //   // self.interrupt = true;
+      //   return nok;
+      // }
+
+      // const state = self.containerState;
+      // assert(state, 'expected `containerState` to be defined in container');
+
       // w/ prefix
       if (code === codes.colon) {
+        // if (!state.open) {
+        //   effects.enter(WikiRefToken.wikiAttr, { _container: true });
+        //   state.open = true;
+        // }
         effects.enter(WikiRefToken.wikiAttr);
         effects.enter(WikiRefToken.wikiRefTypePrefixMarker);
         return consumeAttrTypePrefixMarker(code);
       }
       // w/out prefix
       if ((code !== null) && wikirefs.RGX.VALID_CHARS.TYPE.test(String.fromCharCode(code))) {
+        // if (!state.open) {
+        //   effects.enter(WikiRefToken.wikiAttr, { _container: true });
+        //   state.open = true;
+        // }
         effects.enter(WikiRefToken.wikiAttr);
         effects.enter(WikiRefToken.wikiAttrTypeTxt);
         return consumeAttrTypeTxt(code);
@@ -487,6 +533,25 @@ export const syntaxWikiAttrs = (function (opts?: Partial<WikiRefsOptions>): Exte
           nok,
         ), UnifiedTypeToken.linePrefix)(code);
       }
+
+      // todo ...?
+
+      // // from: https://github.com/micromark/micromark-extension-gfm-table/blob/main/dev/lib/syntax.js#L595
+      // function hack (code: Code): State | void {
+      //   self._gfmTableDynamicInterruptHack = true
+
+      //   return effects.check(
+      //     self.parser.constructs.flow,
+      //     function (code) {
+      //       self._gfmTableDynamicInterruptHack = false
+      //       return nok(code)
+      //     },
+      //     function (code) {
+      //       self._gfmTableDynamicInterruptHack = false
+      //       return ok(code)
+      //     }
+      //   )(code);
+      // }
     }
 
     function bulletLookahead(effects: Effects, ok: State, nok: State): State | void {
