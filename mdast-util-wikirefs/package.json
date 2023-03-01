@@ -1,0 +1,90 @@
+{
+  "name": "mdast-util-wikirefs",
+  "private": false,
+  "version": "0.0.1",
+  "description": "Converts a `micromark` token stream into an `mdast` syntax tree.",
+  "license": "GPL-3.0",
+  "author": {
+    "name": "manunamz",
+    "email": "manuanmz@pm.me"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wikibonsai/remark-wikirefs.git",
+    "directory": "mdast-util-wikirefs"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "browser": "./dist/index.js",
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "clean": "npx del dist",
+    "rebuild": "yarn clean; yarn build",
+    "lint": "eslint ./src ./test --ext .ts",
+    "pretest": "yarn rebuild",
+    "test": "mocha",
+    "dev:fix-links": "yarn link micromark-extension-wikirefs"
+  },
+  "dependencies": {
+    "lodash-es": "^4.17.21",
+    "micromark-extension-wikirefs": "^0.0.1",
+    "wikirefs": "^0.0.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.19.3",
+    "@babel/plugin-transform-runtime": "^7.19.1",
+    "@babel/preset-env": "^7.19.4",
+    "@babel/preset-typescript": "^7.18.6",
+    "@babel/runtime": "^7.19.4",
+    "@rollup/plugin-babel": "^5.3.0",
+    "@types/lodash-es": "^4.17.6",
+    "@types/mdast": "^3.0.3",
+    "@types/mocha": "^8.2.2",
+    "@types/unist": "^2.0.6",
+    "@typescript-eslint/eslint-plugin": "^5.42.1",
+    "@typescript-eslint/parser": "^5.42.1",
+    "del-cli": "^3.0.1",
+    "eslint": "^8.27.0",
+    "mdast-util-from-markdown": "^1.2.0",
+    "mdast-util-to-markdown": "^1.3.0",
+    "micromark": "^3.1.0",
+    "mocha": "^10.0.0",
+    "rollup": "^2.47.0",
+    "rollup-plugin-ts": "^3.0.2",
+    "ts-node": "^10.9.1",
+    "typescript": "4.7.4",
+    "unified": "^10.1.2",
+    "wikirefs-spec": "^0.0.1"
+  },
+  "keywords": [
+    "bidirectional link",
+    "bidirectional links",
+    "internal link",
+    "internal links",
+    "markdown",
+    "mdast",
+    "mdast-extension",
+    "mdast-plugin",
+    "ref",
+    "refs",
+    "reference",
+    "references",
+    "remark",
+    "wiki",
+    "wiki-link",
+    "wiki-links",
+    "wikiattr",
+    "wikiattrs",
+    "wikibonsai",
+    "wikiembed",
+    "wikiembeds",
+    "wikilink",
+    "wikilinks",
+    "wikiref",
+    "wikirefs"
+  ]
+}
