@@ -1,6 +1,6 @@
 import { merge } from 'lodash-es';
 import * as Uni from 'unist';
-import type { Context, Handle, SafeOptions } from 'mdast-util-to-markdown';
+import type { ConstructName, Context, Handle, SafeOptions } from 'mdast-util-to-markdown';
 import { safe } from 'mdast-util-to-markdown/lib/util/safe.js';
 
 import * as wikirefs from 'wikirefs';
@@ -61,7 +61,7 @@ export function toMarkdownWikiAttrs(this: any, opts: Partial<WikiRefsOptions> = 
     _: Uni.Parent | null | undefined,
     context: Context,
   ): string {
-    const exit = context.enter('attrbox');
+    const exit = context.enter('attrbox' as ConstructName);
 
     // 'defaults' ensure 'fullOpts.attrs' will be populated above
     const format: string = fullOpts.attrs.toMarkdown.format;
@@ -75,7 +75,7 @@ export function toMarkdownWikiAttrs(this: any, opts: Partial<WikiRefsOptions> = 
       // attrtype / key
       /* eslint-disable indent */
       const nodeAttrType: string = safe(
-                                          context,
+                                          context, // todo: 'context' -> 'state' (see: https://github.com/syntax-tree/mdast-util-to-markdown/commit/e812c7954f8b8ea5dd68476c856cbfd7cc4c442b)
                                           attrtype,
                                           { before: ':', after: ':' } as SafeOptions,
                                         );

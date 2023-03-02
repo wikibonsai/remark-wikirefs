@@ -1,5 +1,5 @@
 import * as Uni from 'unist';
-import type { Context, Handle, SafeOptions } from 'mdast-util-to-markdown';
+import type { ConstructName, Context, Handle, SafeOptions } from 'mdast-util-to-markdown';
 import { safe } from 'mdast-util-to-markdown/lib/util/safe.js';
 
 import * as wikirefs from 'wikirefs';
@@ -37,7 +37,7 @@ export function toMarkdownWikiLinks (this: any, opts?: Partial<WikiRefsOptions>)
     _: Uni.Parent | null | undefined,
     context: Context,
   ): string {
-    const exit = context.enter('wikilink');
+    const exit = context.enter('wikilink' as ConstructName);
     // init vars
     /* eslint-disable indent */
     const nodeFileName: string = safe(
