@@ -1,7 +1,7 @@
 {
   "name": "remark-wikirefs",
   "private": false,
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A `remark` plugin for wikirefs (including [[wikilinks]]).",
   "license": "GPL-3.0",
   "author": {
@@ -23,7 +23,7 @@
   "scripts": {
     "build": "rollup -c",
     "clean": "npx del dist",
-    "rebuild": "yarn clean; yarn build",
+    "rebuild": "yarn clean && yarn build",
     "lint": "eslint ./src ./test --ext .ts",
     "pretest": "yarn rebuild",
     "test": "mocha",
