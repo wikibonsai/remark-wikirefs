@@ -7,7 +7,7 @@ import { fromMarkdownWikiRefs, toMarkdownWikiRefs} from 'mdast-util-wikirefs';
 import { remarkV13Warning } from './warn';
 
 
-export default function remarkWikiRefs(this: any, opts?: Partial<WikiRefsOptions>): void {
+export function remarkWikiRefs(this: any, opts?: Partial<WikiRefsOptions>): void {
   const data: any = this.data();
 
   // warn for earlier versions

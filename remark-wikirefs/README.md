@@ -22,7 +22,7 @@ npm install remark-wikirefs
 ```javascript
 import unified from 'unified';
 import markdown from 'remark-parse';
-import remarkWikiRefs from 'remark-wikirefs';
+import { remarkWikiRefs } from 'remark-wikirefs';
 
 let processor = unified()
     .use(markdown)
