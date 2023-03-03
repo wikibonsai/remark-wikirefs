@@ -37,7 +37,7 @@ const babelPlugin = babel({
 // esm-only configuration
 const esm = {
   ...shared,
-  input: 'src/index.ts',
+  input: pkg.source,
   output: [
     {
       file: pkg.browser,
