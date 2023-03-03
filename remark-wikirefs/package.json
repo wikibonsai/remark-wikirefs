@@ -1,7 +1,7 @@
 {
   "name": "remark-wikirefs",
   "private": false,
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A `remark` plugin for wikirefs (including [[wikilinks]]).",
   "license": "GPL-3.0",
   "author": {
