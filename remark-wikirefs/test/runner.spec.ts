@@ -19,16 +19,15 @@ import type { WikiRefsOptions } from 'micromark-extension-wikirefs';
 import type { AttrBoxNode, WikiLinkNode } from 'mdast-util-wikirefs';
 import { visitNodeType } from 'mdast-util-wikirefs';
 
-import { makeMockOptsForRenderOnly } from 'micromark-extension-wikirefs';
-
 import * as wikirefs from 'wikirefs';
 import type { TestFileData, WikiRefTestCase } from 'wikirefs-spec';
 import { wikiRefCases, fileDataMap } from 'wikirefs-spec';
 
+import { makeMockOptsForRenderOnly } from '../../micromark-extension-wikirefs/test/config';
 import type { TestCaseMdast } from '../../mdast-util-wikirefs/test/types';
 import { mdastCases } from '../../mdast-util-wikirefs/test/cases';
 
-import remarkWikiRefs from '../src';
+import { remarkWikiRefs } from '../src';
 
 
 // setup

@@ -7,12 +7,13 @@ import { toMarkdown } from 'mdast-util-to-markdown';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 
 import type { WikiRefsOptions } from 'micromark-extension-wikirefs';
-import { makeMockOptsForRenderOnly, syntaxWikiRefs } from 'micromark-extension-wikirefs';
+import { syntaxWikiRefs } from 'micromark-extension-wikirefs';
 
 import * as wikirefs from 'wikirefs';
 import type { TestFileData } from 'wikirefs-spec';
 import { fileDataMap } from 'wikirefs-spec';
 
+import { makeMockOptsForRenderOnly } from '../../micromark-extension-wikirefs/test/config';
 import { visitNodeType } from './util/visit';
 import type {
   AttrBoxNode,
