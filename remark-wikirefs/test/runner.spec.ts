@@ -28,7 +28,7 @@ import { wikiRefCases, fileDataMap } from 'wikirefs-spec';
 import type { TestCaseMdast } from '../../mdast-util-wikirefs/test/types';
 import { mdastCases } from '../../mdast-util-wikirefs/test/cases';
 
-import { remarkWikiRefs } from '../src';
+import remarkWikiRefs from '../src';
 
 
 // setup
