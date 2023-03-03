@@ -2670,7 +2670,7 @@ mdast-util-find-and-replace@^2.0.0:
     unist-util-is "^5.0.0"
     unist-util-visit-parents "^5.0.0"
 
-mdast-util-from-markdown@^1.0.0:
+mdast-util-from-markdown@^1.0.0, mdast-util-from-markdown@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/mdast-util-from-markdown/-/mdast-util-from-markdown-1.3.0.tgz#0214124154f26154a2b3f9d401155509be45e894"
   integrity sha512-HN3W1gRIuN/ZW295c7zi7g9lVBllMgZE40RxCX37wrTPWXCWtpvOZdfnuK+1WNpvZje6XuJeI3Wnb4TJEUem+g==
@@ -2780,7 +2780,7 @@ mdast-util-to-markdown@^0.6.0:
     repeat-string "^1.0.0"
     zwitch "^1.0.0"
 
-mdast-util-to-markdown@^1.0.0, mdast-util-to-markdown@^1.3.0:
+mdast-util-to-markdown@^1.0.0, mdast-util-to-markdown@^1.3.0, mdast-util-to-markdown@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/mdast-util-to-markdown/-/mdast-util-to-markdown-1.5.0.tgz#c13343cb3fc98621911d33b5cd42e7d0731171c6"
   integrity sha512-bbv7TPv/WC49thZPg3jXuqzuvI45IL2EVAr/KxF0BSdHsU0ceFHOmwQn6evxAh1GaoK/6GQ1wp4R4oW2+LFL/A==
@@ -2806,13 +2806,16 @@ mdast-util-to-string@^3.0.0, mdast-util-to-string@^3.1.0:
   dependencies:
     "@types/mdast" "^3.0.0"
 
-mdast-util-wikirefs@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/mdast-util-wikirefs/-/mdast-util-wikirefs-0.0.1.tgz#f2a4cfac270b7bf7152faf4e1627523b4dc5067b"
-  integrity sha512-H8AnI9VT2a8mwVRiS2sfKskOLb7mAHIRfy1TXNNs298HvUy4eAzljZwIlbh3sLSRYpXa+Bp3GYse1Gh1bRKffQ==
+mdast-util-wikirefs@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/mdast-util-wikirefs/-/mdast-util-wikirefs-0.0.2.tgz#134b40607a08710a022ea5ecebad4f1a2e485232"
+  integrity sha512-60vULmro4y6GuhV0zG1ksihehfPTi057LhLhMha3d4u2ktEHklBWI9Y6TL4tNYsuyksqsiRsm8WOMOBo7YoNtg==
   dependencies:
     lodash-es "^4.17.21"
+    mdast-util-from-markdown "^1.3.0"
+    mdast-util-to-markdown "^1.5.0"
     micromark-extension-wikirefs "^0.0.1"
+    micromark-util-types "^1.0.2"
     wikirefs "^0.0.1"
 
 meow@^6.1.1:

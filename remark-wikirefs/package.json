@@ -30,7 +30,7 @@
     "dev:fix-links": "yarn link micromark-extension-wikirefs mdast-util-wikirefs"
   },
   "dependencies": {
-    "mdast-util-wikirefs": "^0.0.1",
+    "mdast-util-wikirefs": "^0.0.2",
     "micromark-extension-wikirefs": "^0.0.1"
   },
   "devDependencies": {
