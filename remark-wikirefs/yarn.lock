@@ -2806,15 +2806,15 @@ mdast-util-to-string@^3.0.0, mdast-util-to-string@^3.1.0:
   dependencies:
     "@types/mdast" "^3.0.0"
 
-mdast-util-wikirefs@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/mdast-util-wikirefs/-/mdast-util-wikirefs-0.0.2.tgz#134b40607a08710a022ea5ecebad4f1a2e485232"
-  integrity sha512-60vULmro4y6GuhV0zG1ksihehfPTi057LhLhMha3d4u2ktEHklBWI9Y6TL4tNYsuyksqsiRsm8WOMOBo7YoNtg==
+mdast-util-wikirefs@^0.0.2-md:
+  version "0.0.2-md"
+  resolved "https://registry.yarnpkg.com/mdast-util-wikirefs/-/mdast-util-wikirefs-0.0.2-md.tgz#4b8d2805d60848ae42c58f1c6ac30d09eca2d427"
+  integrity sha512-KW9/B51mDEeSNxW+yUEgHhlJYqa9nNcQlH6f76uMH7ZAhX7EwUnlYAVHvqojBVIbTDRA6R412u5SayblxSHTAw==
   dependencies:
     lodash-es "^4.17.21"
     mdast-util-from-markdown "^1.3.0"
     mdast-util-to-markdown "^1.5.0"
-    micromark-extension-wikirefs "^0.0.1"
+    micromark-extension-wikirefs "^0.0.2-mm"
     micromark-util-types "^1.0.2"
     wikirefs "^0.0.1"
 
@@ -2942,10 +2942,10 @@ micromark-extension-gfm@^2.0.0:
     micromark-util-combine-extensions "^1.0.0"
     micromark-util-types "^1.0.0"
 
-micromark-extension-wikirefs@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/micromark-extension-wikirefs/-/micromark-extension-wikirefs-0.0.1.tgz#afea47e9c84801df52304feb77c1c46de1788ee8"
-  integrity sha512-1PtmHgTfvfCRvx4trYLL1tIH/XzQGj1NKJhSAyyG6malst3akDX7mBczkmQXyqujmkgD3F7rBRH670s5AolVeQ==
+micromark-extension-wikirefs@^0.0.2-mm:
+  version "0.0.2-mm"
+  resolved "https://registry.yarnpkg.com/micromark-extension-wikirefs/-/micromark-extension-wikirefs-0.0.2-mm.tgz#17f7d41548fcfbd61c7583eb869b6be2a9da4e02"
+  integrity sha512-qxsBIAWlZfBfezUYRWk7pevv7BKlT3IRLFUv/oOIn+QoSnE2bAtDiC4VzLUG0DsS31k+mUn8oTliOq74zf4yvg==
   dependencies:
     lodash-es "^4.17.21"
     micromark-factory-space "^1.0.0"
