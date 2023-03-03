@@ -20,9 +20,9 @@ npm install remark-wikirefs
 ## Use
 
 ```javascript
-const unified = require('unified')
-const markdown = require('remark-parse')
-const { remarkWikiRefs } = require('remark-wikirefs')
+import unified from 'unified';
+import markdown from 'remark-parse';
+import remarkWikiRefs from 'remark-wikirefs';
 
 let processor = unified()
     .use(markdown)
