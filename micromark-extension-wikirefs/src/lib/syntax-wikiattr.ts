@@ -143,11 +143,11 @@ export const syntaxWikiAttrs = (function (opts?: Partial<WikiRefsOptions>): Exte
     );
     assert(
       !((attrEvents.length > 0) && (attrEnterEvents.length === 0)),
-      'wikiattrs enter token expected',
+      'wikiattrs enter token expected -- if you are using remark-caml, set \'useCaml\' option to \'true\'',
     );
     assert(
       !((attrEvents.length > 0) && (attrExitEvents.length === 0)),
-      'wikiattrs exit token expected',
+      'wikiattrs exit token expected -- if you are using remark-caml, set \'useCaml\' option to \'true\'',
     );
 
     // build attrbox //
