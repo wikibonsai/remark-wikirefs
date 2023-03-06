@@ -34,25 +34,30 @@ function run(contextMsg: string, tests: WikiRefTestCase[]): void {
             htmlExtensions: [gfmHtml(), htmlWikiRefs({
               ...mockOpts,
               resolveEmbedContent: (filename: string): (string | undefined) => {
+                // markdown-only
+                if (wikirefs.isMedia(filename)) { return; }
                 // cycle detection
-                if (!cycleStack) { cycleStack = []; }
-                else { if (cycleStack.includes(filename)) { return 'cycle detected'; }}
+                if (!cycleStack) {
+                  cycleStack = [];
+                } else {
+                  if (cycleStack.includes(filename)) {
+                    return 'cycle detected';
+                  }
+                }
+                // get content
                 const fakeFile: TestFileData | undefined = fileDataMap.find((fileData: TestFileData) => fileData.filename === filename);
                 const content: string | undefined = fakeFile ? fakeFile.content : undefined;
-                // markdown-only
-                if (!wikirefs.isMedia(filename)) {
-                  let renderedContent: string | undefined;
-                  cycleStack.push(filename);
-                  if (content === undefined) {
-                    renderedContent = undefined;
-                  } else if (content.length === 0) {
-                    renderedContent = '';
-                  } else {
-                    renderedContent = micromarkWrapper(content);
-                  }
-                  cycleStack = [];
-                  return renderedContent;
+                let renderedContent: string | undefined;
+                cycleStack.push(filename);
+                if (content === undefined) {
+                  renderedContent = undefined;
+                } else if (content.length === 0) {
+                  renderedContent = '';
+                } else {
+                  renderedContent = micromarkWrapper(content);
                 }
+                cycleStack = [];
+                return renderedContent;
               }
             })],
           });

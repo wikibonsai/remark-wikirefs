@@ -50,26 +50,34 @@ function runMkdnToMdast(contextMsg: string, tests: TestCaseMdast[]): void {
                                               .use(remarkWikiRefs, merge({
                                                 ...mockOpts,
                                                 resolveEmbedContent: (filename: string): (string | undefined) => {
+                                                  // markdown-only
+                                                  if (wikirefs.isMedia(filename)) { return; }
                                                   // cycle detection
-                                                  if (!cycleStack) { cycleStack = []; }
-                                                  else { if (cycleStack.includes(filename)) { return 'cycle detected'; }}
+                                                  if (!cycleStack) {
+                                                    cycleStack = [];
+                                                  } else {
+                                                    if (cycleStack.includes(filename)) {
+                                                      // reset stack before leaving
+                                                      cycleStack = [];
+                                                      return 'cycle detected';
+                                                    }
+                                                  }
+                                                  // get content
                                                   const fakeFile: TestFileData | undefined = fileDataMap.find((fileData: TestFileData) => fileData.filename === filename);
                                                   const content: string | undefined = fakeFile ? fakeFile.content : undefined;
-                                                  // markdown-only
-                                                  if (!wikirefs.isMedia(filename)) {
-                                                    // let mdastContent: string | undefined;
-                                                    let mdastContent: any;
-                                                    cycleStack.push(filename);
-                                                    if (content === undefined) {
-                                                      mdastContent = undefined;
-                                                    } else if (content.length === 0) {
-                                                      mdastContent = '';
-                                                    } else {
-                                                      mdastContent = processor.parse(content);
-                                                    }
-                                                    cycleStack = [];
-                                                    return mdastContent;
+                                                  // let mdastContent: string | undefined;
+                                                  let mdastContent: any;
+                                                  cycleStack.push(filename);
+                                                  if (content === undefined) {
+                                                    mdastContent = undefined;
+                                                  } else if (content.length === 0) {
+                                                    mdastContent = '';
+                                                  } else {
+                                                    mdastContent = processor.parse(content);
                                                   }
+                                                  // reset stack before leaving
+                                                  cycleStack = [];
+                                                  return mdastContent;
                                                 },
                                               }, test.opts));
         /* eslint-enable indent */
@@ -105,26 +113,34 @@ function runMkdnToHtml(contextMsg: string, tests: WikiRefTestCase[]): void {
                                               .use(remarkWikiRefs, merge({
                                                 ...mockOpts,
                                                 resolveEmbedContent: (filename: string): (string | any | undefined) => {
+                                                  // markdown-only
+                                                  if (wikirefs.isMedia(filename)) { return; }
                                                   // cycle detection
-                                                  if (!cycleStack) { cycleStack = []; }
-                                                  else { if (cycleStack.includes(filename)) { return { type: 'text', value: 'cycle detected'}; }}
+                                                  if (!cycleStack) {
+                                                    cycleStack = [];
+                                                  } else {
+                                                    if (cycleStack.includes(filename)) {
+                                                      // reset stack before leaving
+                                                      cycleStack = [];
+                                                      return { type: 'text', value: 'cycle detected'};
+                                                    }
+                                                  }
+                                                  // get content
                                                   const fakeFile: TestFileData | undefined = fileDataMap.find((fileData: TestFileData) => fileData.filename === filename);
                                                   const content: string | undefined = fakeFile ? fakeFile.content : undefined;
-                                                  // markdown-only
-                                                  if (!wikirefs.isMedia(filename)) {
-                                                    // let mdastContent: string | undefined;
-                                                    let mdastContent: any;
-                                                    cycleStack.push(filename);
-                                                    if (content === undefined) {
-                                                      mdastContent = undefined;
-                                                    } else if (content.length === 0) {
-                                                      mdastContent = '';
-                                                    } else {
-                                                      mdastContent = processor.parse(content);
-                                                    }
-                                                    cycleStack = [];
-                                                    return mdastContent;
+                                                  // let mdastContent: string | undefined;
+                                                  let mdastContent: any;
+                                                  cycleStack.push(filename);
+                                                  if (content === undefined) {
+                                                    mdastContent = undefined;
+                                                  } else if (content.length === 0) {
+                                                    mdastContent = '';
+                                                  } else {
+                                                    mdastContent = processor.parse(content);
                                                   }
+                                                  // reset stack before leaving
+                                                  cycleStack = [];
+                                                  return mdastContent;
                                                 },
                                               }, test.opts))
                                               .use(remarkRehype)
@@ -234,26 +250,34 @@ function runMkdnToHtmlVFile(contextMsg: string, tests: WikiRefTestCase[]): void 
                                               .use(remarkWikiRefs,  merge({
                                                 ...mockOpts,
                                                 resolveEmbedContent: (filename: string): (string | any | undefined) => {
+                                                  // markdown-only
+                                                  if (wikirefs.isMedia(filename)) { return; }
                                                   // cycle detection
-                                                  if (!cycleStack) { cycleStack = []; }
-                                                  else { if (cycleStack.includes(filename)) { return { type: 'text', value: 'cycle detected'}; }}
+                                                  if (!cycleStack) {
+                                                    cycleStack = [];
+                                                  } else {
+                                                    if (cycleStack.includes(filename)) {
+                                                      // reset stack before leaving
+                                                      cycleStack = [];
+                                                      return { type: 'text', value: 'cycle detected'};
+                                                    }
+                                                  }
+                                                  // get content
                                                   const fakeFile: TestFileData | undefined = fileDataMap.find((fileData: TestFileData) => fileData.filename === filename);
                                                   const content: string | undefined = fakeFile ? fakeFile.content : undefined;
-                                                  // markdown-only
-                                                  if (!wikirefs.isMedia(filename)) {
-                                                    // let mdastContent: string | undefined;
-                                                    let mdastContent: any;
-                                                    cycleStack.push(filename);
-                                                    if (content === undefined) {
-                                                      mdastContent = undefined;
-                                                    } else if (content.length === 0) {
-                                                      mdastContent = '';
-                                                    } else {
-                                                      mdastContent = processor.parse(content);
-                                                    }
-                                                    cycleStack = [];
-                                                    return mdastContent;
+                                                  // let mdastContent: string | undefined;
+                                                  let mdastContent: any;
+                                                  cycleStack.push(filename);
+                                                  if (content === undefined) {
+                                                    mdastContent = undefined;
+                                                  } else if (content.length === 0) {
+                                                    mdastContent = '';
+                                                  } else {
+                                                    mdastContent = processor.parse(content);
                                                   }
+                                                  // reset stack before leaving
+                                                  cycleStack = [];
+                                                  return mdastContent;
                                                 },
                                               }, test.opts))
                                               .use(remarkRehype)
