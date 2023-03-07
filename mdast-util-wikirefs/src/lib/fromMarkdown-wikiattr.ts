@@ -254,13 +254,24 @@ export function fromMarkdownWikiAttrs(this: any, opts?: Partial<WikiRefsOptions>
                   data: {
                     hName: 'a',
                     hProperties: {
-                      className: [
-                        fullOpts.cssNames.attr,
-                        fullOpts.cssNames.wiki,
-                        attrType
-                          ? fullOpts.cssNames.reftype + attrType.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
-                          : fullOpts.cssNames.reftype + 'attrtype-error',
-                      ],
+                      className: (wikiItem.doctype.length > 0)
+                      // with doctype
+                        ? [
+                          fullOpts.cssNames.attr,
+                          fullOpts.cssNames.wiki,
+                          attrType
+                            ? fullOpts.cssNames.reftype + attrType.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
+                            : fullOpts.cssNames.reftype + 'attrtype-error',
+                          fullOpts.cssNames.doctype + wikiItem.doctype.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, ''),
+                        ]
+                        // without doctype
+                        : [
+                          fullOpts.cssNames.attr,
+                          fullOpts.cssNames.wiki,
+                          attrType
+                            ? fullOpts.cssNames.reftype + attrType.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
+                            : fullOpts.cssNames.reftype + 'attrtype-error',
+                        ],
                       href: wikiItem.baseUrl + wikiItem.htmlHref,
                       dataHref: wikiItem.baseUrl + wikiItem.htmlHref,
                     },

@@ -156,7 +156,7 @@ export function htmlWikiEmbeds(this: any, opts: ReqHtmlOpts): HtmlExtension {
         // '<doctype>'
         if ((doctype !== null) && (doctype !== undefined) && (doctype.length !== 0)) {
           const docTypeSlug: string = doctype.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
-          cssClassArray.push(docTypeSlug);
+          cssClassArray.push(opts.cssNames.doctype + docTypeSlug);
         }
         const css: string = cssClassArray.join(' ');
         this.tag(`<a class="${css}" href="${opts.baseUrl + htmlHref}" data-href="${opts.baseUrl + htmlHref}">`);
