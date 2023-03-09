@@ -58,11 +58,11 @@ export interface OptToMarkdown {
 
 // full options for all remark-wikirefs-related plugins
 export interface WikiRefsOptions {
-  resolveHtmlText: (fname: string) => string | undefined;
   resolveHtmlHref: (fname: string) => string | undefined;
+  resolveHtmlText: (fname: string) => string | undefined;
   resolveDocType?: (fname: string) => string | undefined;
-  // embed-only -- micromark returns html string; mdast + remark return mdast nodes
-  resolveEmbedContent?: (env: any, fname: string) => string | undefined;
+  // embed-only -- micromark returns html string; mdast + remark returns a string or mdast node
+  resolveEmbedContent?: (env: any, fname: string) => string | any | undefined;
   baseUrl: string;
   cssNames: Partial<OptCssNames>;
   // wiki kind options
@@ -75,9 +75,10 @@ export interface WikiRefsOptions {
 // required options
 
 export interface ReqHtmlOpts {
-  resolveHtmlText: (fname: string) => string | undefined;
   resolveHtmlHref: (fname: string) => string | undefined;
+  resolveHtmlText: (fname: string) => string | undefined;
   resolveDocType?: (fname: string) => string | undefined;
+  // embed-only -- micromark returns html string; mdast + remark returns a string or mdast node
   resolveEmbedContent: (fname: string) => string | undefined;
   baseUrl: string;
   attrs: OptAttr;

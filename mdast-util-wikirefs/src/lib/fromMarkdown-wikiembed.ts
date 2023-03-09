@@ -18,8 +18,8 @@ import type { WikiEmbedNode } from '../util/types';
 interface ReqOpts {
   resolveHtmlText: (fname: string) => string | undefined;
   resolveHtmlHref: (fname: string) => string | undefined;
-  resolveEmbedContent: (fname: string) => any;
   resolveDocType?: (fname: string) => string | undefined;
+  resolveEmbedContent: (fname: string) => string | any | undefined;
   baseUrl: string;
   embeds: OptEmbed;
   cssNames: OptCssNames;
@@ -341,15 +341,26 @@ export function fromMarkdownWikiEmbeds(this: any, opts?: Partial<WikiRefsOptions
       });
       // embed content
       if (fullOpts.resolveEmbedContent) {
-        const htmlContent: string | undefined = fullOpts.resolveEmbedContent(filename);
-        if (!htmlContent) {
-          wikiEmbed.children[0].children[2].children = [{
+        const htmlContent: string | any | undefined = fullOpts.resolveEmbedContent(filename);
+        // todo: 'fullOpts.embeds.format' option
+        // if (fullOpts.embeds.format === 'string') {
+        //   // for raw string
+        //   wikiEmbed.children[0].children[2].children = [{
+        //     type: 'text',
+        //     value: (htmlContent !== undefined)
+        //       ? htmlContent
+        //       : fullOpts.embeds.errorContent + '\'' + filename + '\'',
+        //   }];
+        // }
+        // if (fullOpts.embeds.format === 'mdast-node') {
+        //   // for mdast node
+        wikiEmbed.children[0].children[2].children = (htmlContent !== undefined)
+          ? [htmlContent]
+          : [{
             type: 'text',
-            value: fullOpts.embeds.errorContent + '\'' + filename + '\''
+            value: fullOpts.embeds.errorContent + '\'' + filename + '\'',
           }];
-        } else {
-          wikiEmbed.children[0].children[2].children = [htmlContent];
-        }
+        // }
       }
     }
   }
