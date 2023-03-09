@@ -1,9 +1,8 @@
 import path from 'path';
 import { merge } from 'lodash-es';
 import * as wikirefs from 'wikirefs';
-import type { Extension } from 'mdast-util-from-markdown';
+import type { CompileContext, Extension as FromMarkdownExtension } from 'mdast-util-from-markdown';
 import type { Token } from 'micromark-util-types';
-
 import type {
   AttrData,
   WikiAttrData,
@@ -11,6 +10,7 @@ import type {
   OptCssNames,
   WikiRefsOptions,
 } from 'micromark-extension-wikirefs';
+import { Node } from 'mdast-util-from-markdown/lib';
 
 import type {
   AttrBoxNode,
@@ -36,7 +36,7 @@ interface ReqOpts {
 // by the time 'wikiAttrFromMarkdown()' is run, attributes should already have been
 // grouped in the front of the token stream (from 'resolveWikiAttrs()')
 
-export function fromMarkdownWikiAttrs(this: any, opts?: Partial<WikiRefsOptions>): Extension {
+export function fromMarkdownWikiAttrs(opts?: Partial<WikiRefsOptions>): FromMarkdownExtension {
   // opts
   const defaults: ReqOpts = {
     resolveHtmlHref: (fname: string) => {
@@ -70,9 +70,6 @@ export function fromMarkdownWikiAttrs(this: any, opts?: Partial<WikiRefsOptions>
   };
   const fullOpts: ReqOpts = merge(defaults, opts);
 
-  // keep track of current attrtype that corresponds to each filename
-  // var curKey: string;
-
   // note: enter/exit keys should match a token name
   if (fullOpts.useCaml) {
     return {
@@ -80,7 +77,7 @@ export function fromMarkdownWikiAttrs(this: any, opts?: Partial<WikiRefsOptions>
         wikiAttrKey: exitWikiAttrKey,
         wikiAttrVal: exitWikiAttrVal,
       },
-    } as Extension;
+    } as FromMarkdownExtension;
   } else {
     return {
       enter: {
@@ -91,10 +88,10 @@ export function fromMarkdownWikiAttrs(this: any, opts?: Partial<WikiRefsOptions>
         wikiAttrVal: exitWikiAttrVal,
         wikiAttrBox: exitWikiAttrBox,
       },
-    } as Extension;
+    } as FromMarkdownExtension;
   }
 
-  function enterWikiAttrBox (this: any, token: Token) {
+  function enterWikiAttrBox (this: CompileContext, token: Token): void {
     const startAttrBoxNode: AttrBoxNode = {
       type: 'attrbox',
       children: [] as (AttrBoxTitleNode | AttrBoxListNode)[],
@@ -107,24 +104,24 @@ export function fromMarkdownWikiAttrs(this: any, opts?: Partial<WikiRefsOptions>
       },
     };
     // is accessible via 'this.stack' (see below)
-    this.enter(startAttrBoxNode, token);
+    this.enter(startAttrBoxNode as AttrBoxNode as unknown as Node, token);
     // current key
     const curKey = this.getData('curKey');
     if (!curKey) this.setData('curKey', '');
   }
 
-  function exitWikiAttrKey (this: any, token: Token) {
+  function exitWikiAttrKey (this: CompileContext, token: Token): void {
     const attrtype: string = this.sliceSerialize(token).trim();
-    const current: AttrBoxNode = top(this.stack);
+    const current: AttrBoxNode = top(this.stack as Node[] as unknown as Set<AttrBoxNode>);
     if (current.data && current.data.items && !Object.keys(current.data.items).includes(attrtype)) {
       current.data.items[attrtype] = [] as WikiAttrData[];
     }
     this.setData('curKey', attrtype);
   }
 
-  function exitWikiAttrVal (this: any, token: Token): void {
+  function exitWikiAttrVal (this: CompileContext, token: Token): void {
     const filename: string = this.sliceSerialize(token);
-    const current: AttrBoxNode = top(this.stack);
+    const current: AttrBoxNode = top(this.stack as Node[] as unknown as Set<AttrBoxNode>) as AttrBoxNode;
     // build vars
     const baseUrl: string = fullOpts.baseUrl;
     let htmlHref: string | undefined;
@@ -151,7 +148,7 @@ export function fromMarkdownWikiAttrs(this: any, opts?: Partial<WikiRefsOptions>
       baseUrl: baseUrl,
     };
     if (current.data && current.data.items) {
-      const curKey: string = this.getData('curKey');
+      const curKey: string = this.getData('curKey') as string;
       current.data.items[curKey].push(item);
     }
   }
@@ -173,8 +170,8 @@ export function fromMarkdownWikiAttrs(this: any, opts?: Partial<WikiRefsOptions>
   // https://github.com/rehypejs/rehype
   // https://github.com/syntax-tree/mdast-util-to-hast
 
-  function exitWikiAttrBox (this: any, token: Token) {
-    const attrbox: AttrBoxNode = this.exit(token);
+  function exitWikiAttrBox (this: CompileContext, token: Token): void {
+    const attrbox: AttrBoxNode = this.exit(token) as Node as unknown as AttrBoxNode;
     // if we have attr items, process them
     if (Object.values(attrbox.data.items).length > 0) {
       // attrbox

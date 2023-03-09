@@ -1,14 +1,12 @@
-import type { HtmlExtension } from 'micromark-util-types';
-import type { Token } from 'micromark/dev/lib/initialize/document';
-
+import { ok as assert } from 'uvu/assert';
 import * as wikirefs from 'wikirefs';
+import type { CompileContext, HtmlExtension } from 'micromark-util-types';
+import type { Token } from 'micromark/dev/lib/initialize/document';
 
 import type { WikiLinkData, ReqHtmlOpts } from '../util/types';
 
 
-// leaving off return type 'HtmlExtension' due to:
-//  Type '(this: any, token: Token) => void' is not assignable to type '() => void'.ts(2322)
-export function htmlWikiLinks(this: any, opts: ReqHtmlOpts): HtmlExtension {
+export function htmlWikiLinks(opts: ReqHtmlOpts): HtmlExtension {
   // note: enter/exit keys should match a token name
   return {
     enter: {
@@ -22,33 +20,29 @@ export function htmlWikiLinks(this: any, opts: ReqHtmlOpts): HtmlExtension {
     }
   };
 
-  function enterWikiLink (this: any): void {
-    let stack: WikiLinkData[] = this.getData('WikiLinkStack');
+  function enterWikiLink (this: CompileContext): void {
+    let stack: WikiLinkData[] = this.getData('WikiLinkStack') as unknown as WikiLinkData[];
     if (!stack) this.setData('WikiLinkStack', (stack = []));
     stack.push({} as WikiLinkData);
   }
 
-  function exitLinkTypeTxt (this: any, token: Token): void {
+  function exitLinkTypeTxt (this: CompileContext, token: Token): void {
     const linktype: string = this.sliceSerialize(token);
-    const stack: WikiLinkData[] = this.getData('WikiLinkStack');
+    const stack: WikiLinkData[] = this.getData('WikiLinkStack') as unknown as WikiLinkData[];
     const current: WikiLinkData = top(stack);
     current.linktype = linktype;
   }
 
-  function exitFileNameTxt (this: any, token: Token): void {
+  function exitFileNameTxt (this: CompileContext, token: Token): void {
     const filename: string = this.sliceSerialize(token);
-    const stack: WikiLinkData[] = this.getData('WikiLinkStack');
+    const stack: WikiLinkData[] = this.getData('WikiLinkStack') as unknown as WikiLinkData[];
     const current: WikiLinkData = top(stack);
     current.filename = filename;
-    if (opts.resolveDocType) {
-      const resolvedDocType: string | undefined = opts.resolveDocType(filename);
-      current.doctype = resolvedDocType ? resolvedDocType : '';
-    }
   }
 
-  function exitLabelTxt (this: any, token: Token): void {
+  function exitLabelTxt (this: CompileContext, token: Token): void {
     const label: string = this.sliceSerialize(token);
-    const stack: WikiLinkData[] = this.getData('WikiLinkStack');
+    const stack: WikiLinkData[] = this.getData('WikiLinkStack') as unknown as WikiLinkData[];
     const current: WikiLinkData = top(stack);
     current.label = label;
   }
@@ -63,11 +57,19 @@ export function htmlWikiLinks(this: any, opts: ReqHtmlOpts): HtmlExtension {
   // 
   // <a class="wiki link doctype__doctype" href="/tests/fixtures/fname-a" data-href="/tests/fixtures/fname-a">title a</a>
 
-  function exitWikiLink (this: any): void {
-    const wikiLink: WikiLinkData = this.getData('WikiLinkStack').pop();
-
+  function exitWikiLink (this: CompileContext): void {
+    const wikiLink: WikiLinkData | undefined = (this.getData('WikiLinkStack') as unknown as WikiLinkData[]).pop();
+    assert((wikiLink !== undefined), 'in exitWikiLink(): problem with \'WikiLinkData\'');
     // init vars
-    const htmlHref: string | undefined = opts.resolveHtmlHref(wikiLink.filename);
+    const filename: string             = wikiLink.filename;
+    const label: string | undefined    = wikiLink.label;
+    const linktype: string | undefined = wikiLink.linktype;
+    // resolvers
+    const htmlHref: string | undefined = opts.resolveHtmlHref(filename);
+    // @ts-expect-error: check occurs in ternary operator
+    let   htmlText: string             = (opts.resolveHtmlText(filename) !== undefined) ? opts.resolveHtmlText(filename) : filename;
+    // @ts-expect-error: check occurs in ternary operator
+    const doctype : string             = (opts.resolveDocType && opts.resolveDocType(filename) !== undefined)            ? opts.resolveDocType(filename)  : '';
     // open
     let htmlOpen: string = '';
     if (htmlHref === undefined) {
@@ -81,19 +83,19 @@ export function htmlWikiLinks(this: any, opts: ReqHtmlOpts): HtmlExtension {
         cssClassArray.push(opts.cssNames.wiki);
         cssClassArray.push(opts.cssNames.link);
         // linktype
-        if (wikiLink.linktype) {
+        if (linktype) {
           // typed
           const typeCssClass: string = opts.cssNames.type;
           if (typeCssClass !== undefined && typeCssClass.length !== 0) {
             cssClassArray.push(typeCssClass);
           }
           // linktype
-          const linkTypeSlug: string = wikiLink.linktype.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+          const linkTypeSlug: string = linktype.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
           cssClassArray.push(opts.cssNames.reftype + linkTypeSlug);
         }
         // doctype
-        if (opts.resolveDocType && wikiLink.doctype) {
-          const docTypeSlug: string | undefined = wikiLink.doctype.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+        if (doctype.length > 0) {
+          const docTypeSlug: string | undefined = doctype.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
           cssClassArray.push(opts.cssNames.doctype + docTypeSlug);
         }
       }
@@ -101,23 +103,22 @@ export function htmlWikiLinks(this: any, opts: ReqHtmlOpts): HtmlExtension {
       if (css === null) { console.warn('\'css\' is null'); }
       htmlOpen = `<a class="${css}" href="${opts.baseUrl + htmlHref}" data-href="${opts.baseUrl + htmlHref}">`;
     }
-    // htmlText
-    let htmlText: string = '';
     // invalid
     if (htmlHref === undefined) {
+      htmlText = '';
       // linktype
-      if ((wikiLink.linktype !== undefined) && (wikiLink.linktype !== '')) {
-        htmlText = wikirefs.CONST.MARKER.PREFIX + wikiLink.linktype + wikirefs.CONST.MARKER.TYPE;
+      if ((linktype !== undefined) && (linktype !== '')) {
+        htmlText = wikirefs.CONST.MARKER.PREFIX + linktype + wikirefs.CONST.MARKER.TYPE;
       }
-      htmlText += wikirefs.CONST.MARKER.OPEN + wikiLink.filename;
+      htmlText += wikirefs.CONST.MARKER.OPEN + filename;
       // labelled
-      if (wikiLink.label) {
-        htmlText += wikirefs.CONST.MARKER.LABEL + wikiLink.label;
+      if (label) {
+        htmlText += wikirefs.CONST.MARKER.LABEL + label;
       }
       htmlText += wikirefs.CONST.MARKER.CLOSE;
     // valid
-    } else {                 // html text, order of precedence
-      for (const content of [wikiLink.label, opts.resolveHtmlText(wikiLink.filename), wikiLink.filename]) {
+    } else {                 // order of precedence
+      for (const content of [label, htmlText, filename]) {
         if (typeof content === 'string') {
           htmlText = content;
           break;

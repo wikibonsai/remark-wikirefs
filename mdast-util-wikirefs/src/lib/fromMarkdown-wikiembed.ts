@@ -1,8 +1,7 @@
 import path from 'path';
 import { merge } from 'lodash-es';
 import * as wikirefs from 'wikirefs';
-
-import type { Extension } from 'mdast-util-from-markdown';
+import type { CompileContext, Extension as FromMarkdownExtension } from 'mdast-util-from-markdown';
 import type { Token } from 'micromark-util-types';
 import type {
   OptCssNames,
@@ -10,6 +9,7 @@ import type {
   WikiEmbedData,
   OptEmbed,
 } from 'micromark-extension-wikirefs';
+import { Node } from 'mdast-util-from-markdown/lib';
 
 import type { WikiEmbedNode } from '../util/types';
 
@@ -25,7 +25,7 @@ interface ReqOpts {
   cssNames: OptCssNames;
 }
 
-export function fromMarkdownWikiEmbeds(this: any, opts?: Partial<WikiRefsOptions>): Extension {
+export function fromMarkdownWikiEmbeds(opts?: Partial<WikiRefsOptions>): FromMarkdownExtension {
   // opts
   const defaults: ReqOpts = {
     resolveHtmlHref: (fname: string) => {
@@ -77,9 +77,9 @@ export function fromMarkdownWikiEmbeds(this: any, opts?: Partial<WikiRefsOptions
       wikiEmbedFileNameTxt: exitFileNameTxt,
       wikiEmbed: exitWikiEmbed,
     }
-  } as Extension;
+  } as FromMarkdownExtension;
 
-  function enterWikiEmbed (this: any, token: Token) {
+  function enterWikiEmbed (this: CompileContext, token: Token): void {
     const startWikiEmbedNode: WikiEmbedNode = {
       type: 'wikiembed',
       children: [],
@@ -92,12 +92,12 @@ export function fromMarkdownWikiEmbeds(this: any, opts?: Partial<WikiRefsOptions
       }
     };
     // is accessible via 'this.stack' (see below)
-    this.enter(startWikiEmbedNode, token);
+    this.enter(startWikiEmbedNode as WikiEmbedNode as unknown as Node, token);
   }
 
-  function exitFileNameTxt (this: any, token: Token) {
+  function exitFileNameTxt (this: CompileContext, token: Token): void {
     const filename: string = this.sliceSerialize(token);
-    const current: WikiEmbedNode = top(this.stack);
+    const current: WikiEmbedNode = top(this.stack as Node[] as unknown as WikiEmbedNode[]);
     current.data.item.filename = filename;
   }
 
@@ -153,18 +153,17 @@ export function fromMarkdownWikiEmbeds(this: any, opts?: Partial<WikiRefsOptions
   // https://github.com/rehypejs/rehype
   // https://github.com/syntax-tree/mdast-util-to-hast
 
-  function exitWikiEmbed (this: any, token: Token) {
-    const wikiEmbed: WikiEmbedNode = this.exit(token);
-
+  function exitWikiEmbed (this: CompileContext, token: Token): void {
+    const wikiEmbed: WikiEmbedNode = this.exit(token)  as Node as unknown as WikiEmbedNode;
+    // init vars
     const filename: string | null = wikiEmbed.data.item.filename;
     const filenameSlug: string = filename.trim().toLowerCase().replace(/ /g, '-');//.replace(/[^\w-]+/g, '');
     const mediaExt: string = path.extname(filename).toLowerCase();
     const mime: string = path.extname(filename).replace('.', '').toLowerCase();
-
+    // resolvers
     const htmlHref: string | undefined = fullOpts.resolveHtmlHref(filename);
     const htmlText: string | undefined = fullOpts.resolveHtmlText(filename) ? fullOpts.resolveHtmlText(filename) : filename;
     const doctype : string | undefined = fullOpts.resolveDocType            ? fullOpts.resolveDocType(filename)  : '';
-
     ////
     // media
     if (wikirefs.isMedia(filename)) {

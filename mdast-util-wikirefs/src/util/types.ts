@@ -3,6 +3,17 @@ import * as Uni from 'unist';
 import type { AttrData, WikiLinkData, WikiEmbedData } from 'micromark-extension-wikirefs';
 
 
+// Add custom data tracked to turn markdown into a tree.
+declare module 'mdast-util-from-markdown' {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
+  interface CompileData {
+    /**
+     * track the current attribute key
+     */
+    curKey?: string;
+  }
+}
+
 // a note on duplicate node data:
 // 
 // it might feel like some data properties commit data duplicatation

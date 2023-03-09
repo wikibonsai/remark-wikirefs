@@ -1,14 +1,13 @@
-import type { HtmlExtension } from 'micromark-util-types';
+import { ok as assert } from 'uvu/assert';
+import path from 'path';
+import * as wikirefs from 'wikirefs';
+import type { CompileContext, HtmlExtension } from 'micromark-util-types';
 import type { Token } from 'micromark/dev/lib/initialize/document';
 
 import type { WikiEmbedData, ReqHtmlOpts } from '../util/types';
 
-import path from 'path';
 
-import * as wikirefs from 'wikirefs';
-
-
-export function htmlWikiEmbeds(this: any, opts: ReqHtmlOpts): HtmlExtension {
+export function htmlWikiEmbeds(opts: ReqHtmlOpts): HtmlExtension {
   // note: enter/exit keys should match a token name
   return {
     enter: {
@@ -20,15 +19,15 @@ export function htmlWikiEmbeds(this: any, opts: ReqHtmlOpts): HtmlExtension {
     }
   };
 
-  function enterWikiEmbed (this: any): void {
-    let stack: WikiEmbedData[] = this.getData('WikiEmbedStack');
+  function enterWikiEmbed (this: CompileContext): void {
+    let stack: WikiEmbedData[] = this.getData('WikiEmbedStack') as unknown as WikiEmbedData[];
     if (!stack) this.setData('WikiEmbedStack', (stack = []));
     stack.push({} as WikiEmbedData);
   }
 
-  function exitFileNameTxt (this: any, token: Token): void {
+  function exitFileNameTxt (this: CompileContext, token: Token): void {
     const filename: string = this.sliceSerialize(token);
-    const stack: WikiEmbedData[] = this.getData('WikiEmbedStack');
+    const stack: WikiEmbedData[] = this.getData('WikiEmbedStack') as unknown as WikiEmbedData[];
     const current: WikiEmbedData = top(stack);
     current.filename = filename;
     if (opts.resolveDocType) {
@@ -85,17 +84,21 @@ export function htmlWikiEmbeds(this: any, opts: ReqHtmlOpts): HtmlExtension {
   //  </span>
   // </p>
 
-  function exitWikiEmbed (this: any): void {
-    const wikiEmbed: WikiEmbedData = this.getData('WikiEmbedStack').pop();
+  function exitWikiEmbed (this: CompileContext): void {
+    const wikiEmbed: WikiEmbedData | undefined = (this.getData('WikiEmbedStack') as unknown as WikiEmbedData[]).pop();
+    assert((wikiEmbed !== undefined), 'in exitWikiEmbed(): problem with \'WikiEmbedData\'');
     // init vars
     const filename: string | null = wikiEmbed.filename;
+    assert((filename !== null), 'in exitWikiEmbed(): \'filename\' was null');
     const filenameSlug: string = filename.trim().toLowerCase().replace(/ /g, '-');//.replace(/[^\w-]+/g, '');
     const mediaExt: string = path.extname(filename).toLowerCase();
     const mime: string = path.extname(filename).replace('.', '').toLowerCase();
-
+    // resolvers
     const htmlHref: string | undefined = opts.resolveHtmlHref(filename);
-    const htmlText: string | undefined = opts.resolveHtmlText(filename) ? opts.resolveHtmlText(filename) : filename;
-    const doctype : string | undefined = opts.resolveDocType            ? opts.resolveDocType(filename)  : '';
+    // @ts-expect-error: check occurs in ternary operator
+    const htmlText: string             = (opts.resolveHtmlText(filename) !== undefined) ? opts.resolveHtmlText(filename) : filename;
+    // @ts-expect-error: check occurs in ternary operator
+    const doctype : string             = (opts.resolveDocType && opts.resolveDocType(filename) !== undefined)            ? opts.resolveDocType(filename)  : '';
     ////
     // media
     // open : wikiembed
@@ -150,7 +153,7 @@ export function htmlWikiEmbeds(this: any, opts: ReqHtmlOpts): HtmlExtension {
         cssClassArray.push(opts.cssNames.wiki);
         cssClassArray.push(opts.cssNames.embed);
         // '<doctype>'
-        if ((doctype !== null) && (doctype !== undefined) && (doctype.length !== 0)) {
+        if (doctype.length > 0) {
           const docTypeSlug: string = doctype.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
           cssClassArray.push(opts.cssNames.doctype + docTypeSlug);
         }

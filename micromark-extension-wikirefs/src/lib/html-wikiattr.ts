@@ -1,13 +1,12 @@
-import type { HtmlExtension } from 'micromark-util-types';
-import { Token } from 'micromark/lib/create-tokenizer';
-
+import { ok as assert } from 'uvu/assert';
 import * as wikirefs from 'wikirefs';
+import type { CompileContext, HtmlExtension } from 'micromark-util-types';
+import { Token } from 'micromark/lib/create-tokenizer';
 
 import type { AttrData, WikiAttrData, ReqHtmlOpts } from '../util/types';
 
 
-//  Type '(this: any, token: Token) => void' is not assignable to type '() => void'.ts(2322)
-export function htmlWikiAttrs(this: any, fullOpts: ReqHtmlOpts): HtmlExtension {
+export function htmlWikiAttrs(fullOpts: ReqHtmlOpts): HtmlExtension {
   // note: enter/exit keys should match a token name (see 'cross-module.spec.ts')
   if (fullOpts.useCaml) {
     return {
@@ -29,9 +28,9 @@ export function htmlWikiAttrs(this: any, fullOpts: ReqHtmlOpts): HtmlExtension {
     };
   }
 
-  function enterWikiAttrBox (this: any): void {
+  function enterWikiAttrBox (this: CompileContext): void {
     // attrbox
-    let stack = this.getData('attrStack');
+    let stack = this.getData('attrStack') as unknown as AttrData[];
     if (!stack) this.setData('attrStack', (stack = []));
     stack.push({} as AttrData);
     // current key
@@ -39,9 +38,9 @@ export function htmlWikiAttrs(this: any, fullOpts: ReqHtmlOpts): HtmlExtension {
     if (!curKey) this.setData('curKey', '');
   }
 
-  function exitWikiAttrKey (this: any, token: Token): void {
+  function exitWikiAttrKey (this: CompileContext, token: Token): void {
     const attrtype: string = this.sliceSerialize(token);
-    const stack: AttrData[] = this.getData('attrStack');
+    const stack: AttrData[] = this.getData('attrStack') as unknown as AttrData[];
     const current: AttrData = top(stack);
     if (!Object.keys(current).includes(attrtype)) {
       current[attrtype] = [] as WikiAttrData[];
@@ -53,9 +52,9 @@ export function htmlWikiAttrs(this: any, fullOpts: ReqHtmlOpts): HtmlExtension {
     this.setData('slurpOneLineEnding', true);
   }
 
-  function exitWikiAttrVal (this: any, token: Token): void {
+  function exitWikiAttrVal (this: CompileContext, token: Token): void {
     const filename: string = this.sliceSerialize(token);
-    const stack: AttrData[] = this.getData('attrStack');
+    const stack: AttrData[] = this.getData('attrStack') as unknown as AttrData[];
     const current: AttrData = top(stack);
     // build vars
     const baseUrl: string = fullOpts.baseUrl;
@@ -82,7 +81,7 @@ export function htmlWikiAttrs(this: any, fullOpts: ReqHtmlOpts): HtmlExtension {
       htmlText: htmlText ? htmlText : '',
       baseUrl: baseUrl,
     };
-    const curKey: string = this.getData('curKey');
+    const curKey: string = this.getData('curKey')  as unknown as string;
     current[curKey].push(item);
     // from: https://github.com/micromark/micromark-extension-gfm-footnote/blob/main/dev/lib/html.js#L86
     // “Hack” to prevent a line ending from showing up if we’re in a definition in
@@ -105,9 +104,10 @@ export function htmlWikiAttrs(this: any, fullOpts: ReqHtmlOpts): HtmlExtension {
 
   // by the time 'exitAttrs()' is run, attributes should already have been
   // grouped in the front of the token stream (due to the 'wikiAttrsResolve()')
-  function exitWikiAttrBox (this: any): void {
+  function exitWikiAttrBox (this: CompileContext): void {
     // let self = this;
-    const attrs: AttrData = this.getData('attrStack').pop();
+    const attrs: AttrData | undefined = (this.getData('attrStack') as unknown as AttrData[]).pop();
+    assert((attrs !== undefined), 'in exitWikiAttrBox(): problem with \'attrs\'');
     if ((attrs !== undefined) && Object.keys(attrs).length !== 0) {
       // open
       this.tag(`<aside class="${fullOpts.cssNames.attrbox}">`);
@@ -142,7 +142,7 @@ export function htmlWikiAttrs(this: any, fullOpts: ReqHtmlOpts): HtmlExtension {
           } else {
             cssClassArray.push(fullOpts.cssNames.wiki);
             cssClassArray.push(fullOpts.cssNames.reftype + attrtype.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, ''));
-            if ((wikiItem.doctype !== null) && (wikiItem.doctype !== undefined) && (wikiItem.doctype.length !== 0)) {
+            if (wikiItem.doctype.length > 0) {
               cssClassArray.push(fullOpts.cssNames.doctype + wikiItem.doctype.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, ''));
             }
             const css: string = cssClassArray.join(' ');

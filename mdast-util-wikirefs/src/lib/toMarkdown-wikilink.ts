@@ -1,5 +1,12 @@
 import * as Uni from 'unist';
-import type { ConstructName, Context, Handle, SafeOptions } from 'mdast-util-to-markdown';
+import type {
+  ConstructName,
+  Context,
+  Handle,
+  Handlers,
+  SafeOptions,
+  Options as ToMarkdownExtension,
+} from 'mdast-util-to-markdown';
 import { safe } from 'mdast-util-to-markdown/lib/util/safe.js';
 
 import * as wikirefs from 'wikirefs';
@@ -10,7 +17,7 @@ import type { WikiLinkNode } from '../util/types';
 
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function toMarkdownWikiLinks (this: any, opts?: Partial<WikiRefsOptions>) {
+export function toMarkdownWikiLinks (opts?: Partial<WikiRefsOptions>): ToMarkdownExtension {
 
   return {
     // TODO: I don't fully understand what this does, but I did my
@@ -29,7 +36,7 @@ export function toMarkdownWikiLinks (this: any, opts?: Partial<WikiRefsOptions>)
 
       // note: name should match 'Node.type'
       wikilink: handler as Handle,
-    }
+    } as Partial<Handlers>,
   };
 
   function handler(

@@ -1,7 +1,7 @@
 // from: https://github.com/syntax-tree/mdast-util-gfm-strikethrough/blob/main/index.js#L5
 // import type { ToMarkdownExtension } from 'mdast-util-to-markdown';
 import { merge } from 'lodash-es';
-
+import type { Options as ToMarkdownExtension } from 'mdast-util-to-markdown';
 import { WikiRefsOptions } from 'micromark-extension-wikirefs';
 
 import { toMarkdownWikiAttrs } from './toMarkdown-wikiattr';
@@ -21,7 +21,7 @@ interface ReqOpts {
   },
 }
 
-export function toMarkdownWikiRefs(this: any, opts?: Partial<WikiRefsOptions>) {
+export function toMarkdownWikiRefs(opts?: Partial<WikiRefsOptions>): ToMarkdownExtension {
   // opts
   const defaults: ReqOpts = {
     attrs: {
@@ -36,8 +36,7 @@ export function toMarkdownWikiRefs(this: any, opts?: Partial<WikiRefsOptions>) {
   };
   const fullOpts: ReqOpts = merge(defaults, opts);
 
-  // todo: ToMarkdownExtension[]
-  const wikiRefsPlugins: any[] = [];
+  const wikiRefsPlugins: ToMarkdownExtension[] = [] as ToMarkdownExtension[];
   if (fullOpts.attrs && fullOpts.attrs.enable) {
     wikiRefsPlugins.push(toMarkdownWikiAttrs(fullOpts));
   } 

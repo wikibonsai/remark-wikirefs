@@ -16,7 +16,7 @@ import { htmlWikiLinks } from './html-wikilink';
 import { htmlWikiEmbeds } from './html-wikiembed';
 
 
-export function htmlWikiRefs(this: any, opts: Partial<WikiRefsOptions> = {}): HtmlExtension {
+export function htmlWikiRefs(opts: Partial<WikiRefsOptions> = {}): HtmlExtension {
   // opts
   const defaults: ReqHtmlOpts = {
     resolveHtmlText: (fname: string) => fname.replace(/-/g, ' '),
@@ -74,7 +74,7 @@ export function htmlWikiRefs(this: any, opts: Partial<WikiRefsOptions> = {}): Ht
   const wikiRefsPlugins: HtmlExtension[] = [] as HtmlExtension[];
   if (fullOpts.attrs && fullOpts.attrs.enable) {
     wikiRefsPlugins.push(htmlWikiAttrs(fullOpts));
-  } 
+  }
   if (fullOpts.links && fullOpts.links.enable) {
     wikiRefsPlugins.push(htmlWikiLinks(fullOpts));
   }

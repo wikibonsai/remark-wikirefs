@@ -1,5 +1,9 @@
 import { merge } from 'lodash-es';
 import * as Uni from 'unist';
+import type {
+  Handlers,
+  Options as ToMarkdownExtension,
+} from 'mdast-util-to-markdown';
 import type { ConstructName, Context, Handle, SafeOptions } from 'mdast-util-to-markdown';
 import { safe } from 'mdast-util-to-markdown/lib/util/safe.js';
 
@@ -22,7 +26,7 @@ interface ReqOpts {
   };
 }
 
-export function toMarkdownWikiAttrs(this: any, opts: Partial<WikiRefsOptions> = {}) {
+export function toMarkdownWikiAttrs(opts: Partial<WikiRefsOptions> = {}): ToMarkdownExtension {
   // opts
   const defaults: ReqOpts = {
     attrs: {
@@ -53,7 +57,7 @@ export function toMarkdownWikiAttrs(this: any, opts: Partial<WikiRefsOptions> = 
 
       // note: name should match 'Node.type'
       attrbox: handler as Handle,
-    }
+    } as Partial<Handlers>,
   };
 
   function handler(

@@ -1,7 +1,7 @@
 import path  from 'path';
 import { merge } from 'lodash-es';
 import * as wikirefs from 'wikirefs';
-import type { Extension } from 'mdast-util-from-markdown';
+import type { CompileContext, Extension as FromMarkdownExtension } from 'mdast-util-from-markdown';
 import type { Token } from 'micromark-util-types';
 import type {
   OptAttr,
@@ -9,6 +9,7 @@ import type {
   WikiRefsOptions,
   WikiLinkData,
 } from 'micromark-extension-wikirefs';
+import { Node } from 'mdast-util-from-markdown/lib';
 
 import type { WikiLinkNode } from '../util/types';
 
@@ -23,7 +24,7 @@ interface ReqOpts {
   cssNames: OptCssNames;
 }
 
-export function fromMarkdownWikiLinks(this: any, opts?: Partial<WikiRefsOptions>): Extension {
+export function fromMarkdownWikiLinks(opts?: Partial<WikiRefsOptions>): FromMarkdownExtension {
   // opts
   const defaults: ReqOpts = {
     resolveHtmlHref: (fname: string) => {
@@ -67,9 +68,9 @@ export function fromMarkdownWikiLinks(this: any, opts?: Partial<WikiRefsOptions>
       wikiLinkLabelTxt: exitLabelTxt,
       wikiLink: exitWikiLink,
     }
-  } as Extension;
+  } as FromMarkdownExtension;
 
-  function enterWikiLink (this: any, token: Token) {
+  function enterWikiLink (this: CompileContext, token: Token): void {
     const startWikiLinkNode: WikiLinkNode = {
       type: 'wikilink',
       children: [],
@@ -87,24 +88,24 @@ export function fromMarkdownWikiLinks(this: any, opts?: Partial<WikiRefsOptions>
       },
     };
     // is accessible via 'this.stack' (see below)
-    this.enter(startWikiLinkNode, token);
+    this.enter(startWikiLinkNode as WikiLinkNode as unknown as Node, token);
   }
 
-  function exitLinkTypeTxt (this: any, token: Token) {
+  function exitLinkTypeTxt (this: CompileContext, token: Token): void {
     const linktype: string = this.sliceSerialize(token);
-    const current: WikiLinkNode = top(this.stack);
+    const current: WikiLinkNode = top(this.stack as Node[] as unknown as WikiLinkNode[]);
     current.data.item.linktype = linktype;
   }
 
-  function exitFileNameTxt (this: any, token: Token) {
+  function exitFileNameTxt (this: CompileContext, token: Token): void {
     const filename: string = this.sliceSerialize(token);
-    const current: WikiLinkNode = top(this.stack);
+    const current: WikiLinkNode = top(this.stack as Node[] as unknown as WikiLinkNode[]);
     current.data.item.filename = filename;
   }
 
-  function exitLabelTxt (this: any, token: Token) {
+  function exitLabelTxt (this: CompileContext, token: Token): void {
     const label: string = this.sliceSerialize(token);
-    const current: WikiLinkNode = top(this.stack);
+    const current: WikiLinkNode = top(this.stack as Node[] as unknown as WikiLinkNode[]);
     current.data.item.label = label;
   }
 
@@ -118,8 +119,8 @@ export function fromMarkdownWikiLinks(this: any, opts?: Partial<WikiRefsOptions>
   // 
   // <a class="wiki link doctype__doctype" href="/tests/fixtures/fname-a" data-href="/tests/fixtures/fname-a">title a</a>
 
-  function exitWikiLink (this: any, token: Token) {
-    const wikiLink: WikiLinkNode = this.exit(token);
+  function exitWikiLink (this: CompileContext, token: Token): void {
+    const wikiLink: WikiLinkNode = this.exit(token) as Node as unknown as WikiLinkNode;
 
     // html-href
     const htmlHref: string | undefined = fullOpts.resolveHtmlHref(wikiLink.data.item.filename);
@@ -147,7 +148,6 @@ export function fromMarkdownWikiLinks(this: any, opts?: Partial<WikiRefsOptions>
         }
       }
     }
-
     // css
     const cssClassArray: string[] = [];
     cssClassArray.push(fullOpts.cssNames.wiki);

@@ -15,7 +15,7 @@ import { syntaxWikiLinks } from './syntax-wikilink';
 import { syntaxWikiEmbeds } from './syntax-wikiembed';
 
 
-export const syntaxWikiRefs = (function (opts?: Partial<WikiRefsOptions>): Extension {
+export function syntaxWikiRefs(opts?: Partial<WikiRefsOptions>): Extension {
   // opts
   const defaults: ReqSyntaxOpts = {
     attrs: {
@@ -46,4 +46,4 @@ export const syntaxWikiRefs = (function (opts?: Partial<WikiRefsOptions>): Exten
     wikiRefsPlugins.push(syntaxWikiEmbeds(fullOpts));
   }
   return combineExtensions(wikiRefsPlugins);
-});
+}
