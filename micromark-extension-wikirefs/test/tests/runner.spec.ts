@@ -25,7 +25,7 @@ function run(contextMsg: string, tests: WikiRefTestCase[]): void {
       it(desc, () => {
         const mkdn: string = test.mkdn;
         const expdHtml: string = test.html;
-        let cycleStack: string[];
+        let cycleStack: string[] = [];
         // note: wrap micromark context for markdown wikiembeds to work
         function micromarkWrapper(content: string): string {
           return micromark(content, {
@@ -37,18 +37,20 @@ function run(contextMsg: string, tests: WikiRefTestCase[]): void {
                 // markdown-only
                 if (wikirefs.isMedia(filename)) { return; }
                 // cycle detection
-                if (!cycleStack) {
+                if (cycleStack.length === 0) {
                   cycleStack = [];
                 } else {
                   if (cycleStack.includes(filename)) {
+                    // reset stack before leaving
+                    cycleStack = [];
                     return 'cycle detected';
                   }
                 }
+                cycleStack.push(filename);
                 // get content
                 const fakeFile: TestFileData | undefined = fileDataMap.find((fileData: TestFileData) => fileData.filename === filename);
                 const content: string | undefined = fakeFile ? fakeFile.content : undefined;
                 let renderedContent: string | undefined;
-                cycleStack.push(filename);
                 if (content === undefined) {
                   renderedContent = undefined;
                 } else if (content.length === 0) {
@@ -56,6 +58,7 @@ function run(contextMsg: string, tests: WikiRefTestCase[]): void {
                 } else {
                   renderedContent = micromarkWrapper(content);
                 }
+                // reset stack before leaving
                 cycleStack = [];
                 return renderedContent;
               }

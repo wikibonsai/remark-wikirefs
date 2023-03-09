@@ -89,7 +89,7 @@ function runMkdnToHtml(contextMsg: string, tests: WikiRefTestCase[]): void {
 describe('configs', () => {
 
   beforeEach(() => {
-    mockOpts = { resolveDocTypeSync: () => 'doctype' };
+    mockOpts = { resolveDocType: () => 'doctype' };
   });
 
   describe('doctypes', () => {

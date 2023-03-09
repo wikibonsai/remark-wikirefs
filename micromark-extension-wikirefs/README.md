@@ -177,9 +177,9 @@ It is strongly recommended to provide the following options for best linking res
 - `resolveHtmlHref`
 - `resolveEmbedContent`
 
-For `wikiembeds` -- note:
+For [`wikiembeds`](#wikiembeds) -- note:
 - [`path.extname(filename)`](https://nodejs.org/api/path.html#pathextnamepath) is used to identify the file extension which determines how the embed should be formatted.
-- Check for self-references and cycles when defining [`opts.resolveEmbedContent()`]().
+- Check for self-references and cycles when defining [`opts.resolveEmbedContent()`](https://github.com/wikibonsai/remark-wikirefs/blob/main/micromark-extension-wikirefs/test/tests/runner.spec.ts).
 
 ### Syntax Options
 
@@ -209,7 +209,12 @@ let syntaxOpts = {
 // defaults
 let htmlOpts = {
     resolveHtmlText: (fname: string) => fname.replace(/-/g, ' '),
-    resolveHtmlHref: (fname: string) => '/' + fname.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, ''),
+    resolveHtmlHref: (fname: string) => {
+      const extname: string = wikirefs.isMedia(fname) ? path.extname(fname) : '';
+      fname = fname.replace(extname, '');
+      return '/' + fname.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') + extname;
+    },
+    resolveEmbedContent: (fname: string) => fname + ' embed content',
     baseUrl: '',
     cssNames: {
       // wiki

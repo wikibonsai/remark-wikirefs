@@ -1,6 +1,5 @@
-import { merge } from 'lodash-es';
 import path from 'path';
-
+import { merge } from 'lodash-es';
 import * as wikirefs from 'wikirefs';
 
 import type { Extension } from 'mdast-util-from-markdown';
@@ -29,14 +28,13 @@ interface ReqOpts {
 export function fromMarkdownWikiEmbeds(this: any, opts?: Partial<WikiRefsOptions>): Extension {
   // opts
   const defaults: ReqOpts = {
-    resolveHtmlText: (fname: string) => fname.replace(/-/g, ' '),
-    resolveHtmlHref: (fname: string) => '/' + fname.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, ''),
-    resolveEmbedContent: (fname: string) => {
-      return {
-        type: 'text',
-        value: fname + ' embed content',
-      };
+    resolveHtmlHref: (fname: string) => {
+      const extname: string = wikirefs.isMedia(fname) ? path.extname(fname) : '';
+      fname = fname.replace(extname, '');
+      return '/' + fname.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') + extname;
     },
+    resolveHtmlText: (fname: string) => fname.replace(/-/g, ' '),
+    resolveEmbedContent: (fname: string) => fname + ' embed content',
     baseUrl: '',
     embeds: {
       enable: true,

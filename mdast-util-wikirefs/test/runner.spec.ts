@@ -40,7 +40,7 @@ function runFromMarkdown(contextMsg: string, tests: TestCaseMdast[]): void {
         // test vars
         const mkdn: string = test.mkdn;
         const expdNode: Partial<AttrBoxNode | WikiLinkNode | EmbedMediaSpanNode | EmbedMkdnWrapperNode> = test.node as (AttrBoxNode | WikiLinkNode | EmbedMediaSpanNode | EmbedMkdnWrapperNode);
-        let cycleStack: string[];
+        let cycleStack: string[] = [];
         // setup / go
         // note: wrap fromMarkdown context for markdown wikiembeds to work
         function fromMarkdownWrapper(content: string): any {
@@ -49,8 +49,15 @@ function runFromMarkdown(contextMsg: string, tests: TestCaseMdast[]): void {
             ...mockOpts,
             resolveEmbedContent: (filename: string): (string | undefined) => {
               // cycle detection
-              if (!cycleStack) { cycleStack = []; }
-              else { if (cycleStack.includes(filename)) { return 'cycle detected'; }}
+              if (!cycleStack) {
+                cycleStack = [];
+              } else {
+                if (cycleStack.includes(filename)) {
+                  // reset stack before leaving
+                  cycleStack = [];
+                  return 'cycle detected';
+                }
+              }
               const fakeFile: TestFileData | undefined = fileDataMap.find((fileData: TestFileData) => fileData.filename === filename);
               const content: string | undefined = fakeFile ? fakeFile.content : undefined;
               // markdown-only
@@ -64,6 +71,7 @@ function runFromMarkdown(contextMsg: string, tests: TestCaseMdast[]): void {
                 } else {
                   mdastContent = fromMarkdownWrapper(content);
                 }
+                // reset stack before leaving
                 cycleStack = [];
                 return mdastContent;
               }

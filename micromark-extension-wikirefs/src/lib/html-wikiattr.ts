@@ -30,7 +30,6 @@ export function htmlWikiAttrs(this: any, fullOpts: ReqHtmlOpts): HtmlExtension {
   }
 
   function enterWikiAttrBox (this: any): void {
-    // console.log('enterWikiAttrs');
     // attrbox
     let stack = this.getData('attrStack');
     if (!stack) this.setData('attrStack', (stack = []));
@@ -143,7 +142,9 @@ export function htmlWikiAttrs(this: any, fullOpts: ReqHtmlOpts): HtmlExtension {
           } else {
             cssClassArray.push(fullOpts.cssNames.wiki);
             cssClassArray.push(fullOpts.cssNames.reftype + attrtype.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, ''));
-            if (wikiItem.doctype) { cssClassArray.push(fullOpts.cssNames.doctype + wikiItem.doctype.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')); }
+            if ((wikiItem.doctype !== null) && (wikiItem.doctype !== undefined) && (wikiItem.doctype.length !== 0)) {
+              cssClassArray.push(fullOpts.cssNames.doctype + wikiItem.doctype.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, ''));
+            }
             const css: string = cssClassArray.join(' ');
             this.tag(`<a class="${css}" href="${wikiItem.baseUrl + htmlHref}" data-href="${wikiItem.baseUrl + htmlHref}">`);
             this.raw(htmlText);

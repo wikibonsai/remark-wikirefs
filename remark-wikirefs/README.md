@@ -365,7 +365,18 @@ For more on syntax specification, see the [wikirefs](https://github.com/wikibons
 // defaults
 let remarkOpts = {
     resolveHtmlText: (fname: string) => fname.replace(/-/g, ' '),
-    resolveHtmlHref: (fname: string) => '/' + fname.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, ''),
+    resolveHtmlHref: (fname: string) => {
+      const extname: string = wikirefs.isMedia(fname) ? path.extname(fname) : '';
+      fname = fname.replace(extname, '');
+      return '/' + fname.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') + extname;
+    },
+    // requires mdast version -- resolves to node, not a string
+    resolveEmbedContent: (fname: string) => {
+      return {
+        type: 'text',
+        value: fname + ' embed content',
+      };
+    },
     baseUrl: '',
     cssNames: {
       // wiki
@@ -414,8 +425,12 @@ let remarkOpts = {
 ### Options Descriptions
 
 It is strongly recommended to provide the following options for best linking results:
-- [`resolveHtmlText`]()
-- [`resolveHtmlHref`]()
+- `resolveHtmlText`
+- `resolveHtmlHref`
+
+For [`wikiembeds`](#wikiembeds) -- note:
+- [`path.extname(filename)`](https://nodejs.org/api/path.html#pathextnamepath) is used to identify the file extension which determines how the embed should be formatted.
+- Check for self-references and cycles when defining [`opts.resolveEmbedContent()`](https://github.com/wikibonsai/remark-wikirefs/blob/main/remark-wikirefs/test/runner.spec.ts).
 
 #### `attrs`
 
@@ -485,22 +500,48 @@ A function which takes in the `fname` extracted from a wikilink `[[fname]]`. It 
 
 A function which takes in the `fname` extracted from a wikilink `[[fname]]`. It should return the url of the wikilink-ed file or `undefined` if no such file exists. If no such file exists, the wikilink will render as a disabled and marked invalid.
 
-It is recommended to supply this function, but there is a default returns: `'/' + fname.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')`.
+It is recommended to supply this function, but there is a default returns:
+
+```js
+// micromark
+resolveEmbedContent: (fname: string) => {
+  return {
+    const extname: string = wikirefs.isMedia(fname) ? path.extname(fname) : '';
+    fname = fname.replace(extname, '');
+    return '/' + fname.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') + extname;
+  };
+},
+```
 
 #### `resolveHtmlText: (fname: string) => string | undefined`
 
 A function which takes in the `fname` extracted from a wikilink `[[fname]]`. It should return a string representing the text to populate the a tag's innertext of the wikilink-ed file -- this is often its title -- or `undefined` if no such file exists. If no such file exists, the filename will be used to populate innertext instead. Be sure to apply any text formatting such as lower-casing here.
 
-It is recommended to supply this function, but there is a default which returns: `fname.replace('-', ' ')`.
+It is recommended to supply this function, but there is a default which returns: 
+
+```js
+resolveHtmlText: (fname: string) => fname.replace('-', ' '),
+```
 
 #### `resolveEmbedContent: (fname: string) => string | undefined`
 
 A function which takes in the `fname` extracted from a wikiembed `![[fname]]`. It should return a string representing the markdown content in the file `fname.md`.
 
 It is recommended to supply this function, but there is a default returns:
-- micromark: an html string (`fname + ' embed content'`).
-- mdast/remark: a text node `{ type: 'text', value: fname + ' embed content' };`.
+
+```js
+// micromark
+resolveEmbedContent: (fname) => fname + ' embed content',
+
+// mdast-util
+resolveEmbedContent: (fname: string) => {
+  return {
+    type: 'text',
+    value: fname + ' embed content',
+  };
+},
+```
 
 #### `useCaml`
 
-A boolean value to notify the `wikirefs` plugin that `caml` is being used in conjunction.
+A boolean value to notify the `remark-wikirefs` plugins that `remark-caml` is being used and that the attrbox should be rendered there instead of here.

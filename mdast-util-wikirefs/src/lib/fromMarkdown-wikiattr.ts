@@ -1,7 +1,6 @@
+import path from 'path';
 import { merge } from 'lodash-es';
-
 import * as wikirefs from 'wikirefs';
-
 import type { Extension } from 'mdast-util-from-markdown';
 import type { Token } from 'micromark-util-types';
 
@@ -40,8 +39,12 @@ interface ReqOpts {
 export function fromMarkdownWikiAttrs(this: any, opts?: Partial<WikiRefsOptions>): Extension {
   // opts
   const defaults: ReqOpts = {
+    resolveHtmlHref: (fname: string) => {
+      const extname: string = wikirefs.isMedia(fname) ? path.extname(fname) : '';
+      fname = fname.replace(extname, '');
+      return '/' + fname.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') + extname;
+    },
     resolveHtmlText: (fname: string) => fname.replace(/-/g, ' '),
-    resolveHtmlHref: (fname: string) => '/' + fname.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, ''),
     baseUrl: '',
     attrs: {
       enable: true,

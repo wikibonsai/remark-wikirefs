@@ -43,7 +43,7 @@ function runMkdnToMdast(contextMsg: string, tests: TestCaseMdast[]): void {
         // test vars
         const mkdn: string = test.mkdn;
         const expdNode: Partial<AttrBoxNode | WikiLinkNode> = test.node as (AttrBoxNode | WikiLinkNode);
-        let cycleStack: string[];
+        let cycleStack: string[] = [];
         // setup
         /* eslint-disable indent */
         const processor: Processor = unified().use(remarkParse)
@@ -53,7 +53,7 @@ function runMkdnToMdast(contextMsg: string, tests: TestCaseMdast[]): void {
                                                   // markdown-only
                                                   if (wikirefs.isMedia(filename)) { return; }
                                                   // cycle detection
-                                                  if (!cycleStack) {
+                                                  if (cycleStack.length === 0) {
                                                     cycleStack = [];
                                                   } else {
                                                     if (cycleStack.includes(filename)) {
@@ -62,12 +62,12 @@ function runMkdnToMdast(contextMsg: string, tests: TestCaseMdast[]): void {
                                                       return 'cycle detected';
                                                     }
                                                   }
+                                                  cycleStack.push(filename);
                                                   // get content
                                                   const fakeFile: TestFileData | undefined = fileDataMap.find((fileData: TestFileData) => fileData.filename === filename);
                                                   const content: string | undefined = fakeFile ? fakeFile.content : undefined;
                                                   // let mdastContent: string | undefined;
                                                   let mdastContent: any;
-                                                  cycleStack.push(filename);
                                                   if (content === undefined) {
                                                     mdastContent = undefined;
                                                   } else if (content.length === 0) {
@@ -105,7 +105,7 @@ function runMkdnToHtml(contextMsg: string, tests: WikiRefTestCase[]): void {
         // test vars
         const mkdn: string = test.mkdn;
         const expdHtml: string = test.html;
-        let cycleStack: string[];
+        let cycleStack: string[] = [];
         // setup
         /* eslint-disable indent */
         const processor: Processor = unified().use(remarkParse)
@@ -116,7 +116,7 @@ function runMkdnToHtml(contextMsg: string, tests: WikiRefTestCase[]): void {
                                                   // markdown-only
                                                   if (wikirefs.isMedia(filename)) { return; }
                                                   // cycle detection
-                                                  if (!cycleStack) {
+                                                  if (cycleStack.length === 0) {
                                                     cycleStack = [];
                                                   } else {
                                                     if (cycleStack.includes(filename)) {
@@ -125,12 +125,12 @@ function runMkdnToHtml(contextMsg: string, tests: WikiRefTestCase[]): void {
                                                       return { type: 'text', value: 'cycle detected'};
                                                     }
                                                   }
+                                                  cycleStack.push(filename);
                                                   // get content
                                                   const fakeFile: TestFileData | undefined = fileDataMap.find((fileData: TestFileData) => fileData.filename === filename);
                                                   const content: string | undefined = fakeFile ? fakeFile.content : undefined;
                                                   // let mdastContent: string | undefined;
                                                   let mdastContent: any;
-                                                  cycleStack.push(filename);
                                                   if (content === undefined) {
                                                     mdastContent = undefined;
                                                   } else if (content.length === 0) {
@@ -173,6 +173,7 @@ function runMdastToMkdn(contextMsg: string, tests: TestCaseMdast[]): void {
         //            context, which can affect symbol escaping
         const paragraph: Uni.Parent = {
           type: 'paragraph',
+          // @ts-expect-error: Index signature for type 'string' is missing in type 'AttrBoxNode'.ts(2322) (this error comes and goes...)
           children: [node as (AttrBoxNode | WikiLinkNode)],
         };
         // for (text) 'WikiLink' test cases, but not for 'WikiEmbed' cases
@@ -242,7 +243,7 @@ function runMkdnToHtmlVFile(contextMsg: string, tests: WikiRefTestCase[]): void 
         const mkdn: string = test.mkdn;
         const expdHtml: string = test.html;
         const input = new VFile({ value: mkdn, path: '/tests/fixtures/root' });
-        let cycleStack: string[];
+        let cycleStack: string[] = [];
         // setup
         /* eslint-disable indent */
         const processor: Processor = unified().use(remarkParse)
@@ -253,7 +254,7 @@ function runMkdnToHtmlVFile(contextMsg: string, tests: WikiRefTestCase[]): void 
                                                   // markdown-only
                                                   if (wikirefs.isMedia(filename)) { return; }
                                                   // cycle detection
-                                                  if (!cycleStack) {
+                                                  if (cycleStack.length === 0) {
                                                     cycleStack = [];
                                                   } else {
                                                     if (cycleStack.includes(filename)) {
@@ -262,12 +263,12 @@ function runMkdnToHtmlVFile(contextMsg: string, tests: WikiRefTestCase[]): void 
                                                       return { type: 'text', value: 'cycle detected'};
                                                     }
                                                   }
+                                                  cycleStack.push(filename);
                                                   // get content
                                                   const fakeFile: TestFileData | undefined = fileDataMap.find((fileData: TestFileData) => fileData.filename === filename);
                                                   const content: string | undefined = fakeFile ? fakeFile.content : undefined;
                                                   // let mdastContent: string | undefined;
                                                   let mdastContent: any;
-                                                  cycleStack.push(filename);
                                                   if (content === undefined) {
                                                     mdastContent = undefined;
                                                   } else if (content.length === 0) {

@@ -24,7 +24,7 @@ npm install mdast-util-wikirefs
 
 ### Markdown to AST
 
-#### WikiRefs
+#### WikiRefs (MKDN -> AST)
 
 To use all wiki constructs, use `wikirefs`:
 
@@ -41,7 +41,7 @@ let ast = fromMarkdown('[[fname]]', {
 
 See specific abstract syntax tree node forms below...
 
-#### WikiAttrs
+#### WikiAttrs (MKDN -> AST)
 
 The corresponding `wikiattr` node for...
 
@@ -137,7 +137,7 @@ let ast = fromMarkdown(':attrtype::[[fname]]\n', {
 });
 ```
 
-#### WikiLinks
+#### WikiLinks (MKDN -> AST)
 
 The corresponding `wikilink` node for...
 
@@ -186,7 +186,7 @@ let ast = fromMarkdown('[[fname]]', {
 });
 ```
 
-#### WikiEmbeds
+#### WikiEmbeds (MKDN -> AST)
 
 The corresponding `wikiembed` node for...
 
@@ -199,7 +199,7 @@ The corresponding `wikiembed` node for...
 
 ...in the abstract syntax tree has the form below, where:
 
-* `data.item` contains the original markdown source parsed into the individual components of the wikilink. 
+* `data.item` contains the original markdown source parsed into the individual components of the wikilink.
 
 ```json
 {
@@ -302,7 +302,7 @@ The corresponding `wikiembed` node for...
       }],
     },],
   }],
-}
+},
 {
   "type": "wikiembed",
   "data": {
@@ -335,7 +335,7 @@ The corresponding `wikiembed` node for...
       }
     }],
   }],
-}
+},
 {
   "type": "wikiembed",
   "data": {
@@ -366,7 +366,7 @@ The corresponding `wikiembed` node for...
       }
     }]
   }],
-}
+},
 {
   "type": "wikiembed",
   "data": {
@@ -402,22 +402,24 @@ The corresponding `wikiembed` node for...
 }
 ```
 
-To use only the wikilink construct:
+To use only the wikiembed construct:
 
 ```javascript
 import fromMarkdown from 'mdast-util-from-markdown';
-import { syntaxWikiLinks } from 'micromark-extension-wikirefs';
-import { fromMarkdownWikiLinks } from 'mdast-util-wikirefs';
+import { syntaxWikiEmbeds } from 'micromark-extension-wikirefs';
+import { fromMarkdownWikiEmbeds } from 'mdast-util-wikirefs';
 
 let ast = fromMarkdown('[[fname]]', {
-  extensions: [syntaxWikiLinks],
-  mdastExtensions: [fromMarkdownWikiLinks]
+  extensions: [syntaxWikiEmbeds],
+  mdastExtensions: [fromMarkdownWikiEmbeds]
 });
 ```
 
 ### AST to Markdown
 
 Taking the `ast`s from the previous example...
+
+#### WikiRefs (AST -> MKDN)
 
 ```javascript
 import fromMarkdown from 'mdast-util-from-markdown'
@@ -428,7 +430,9 @@ let markdownString = toMarkdown(ast, {
 }).trim();
 ```
 
-#### WikiAttrs result will be:
+#### WikiAttrs (AST -> MKDN)
+
+...result will be:
 
 ```markdown
 :attrtype::[[fname]]
@@ -445,7 +449,9 @@ let markdownString = toMarkdown(ast, {
 }).trim();
 ```
 
-#### WikiLinks result will be:
+#### WikiLinks (AST -> MKDN)
+
+...result will be:
 
 ```markdown
 [[fname]]
@@ -462,7 +468,9 @@ let markdownString = toMarkdown(ast, {
 }).trim();
 ```
 
-#### WikiEmbeds result will be:
+#### WikiEmbeds (AST -> MKDN)
+
+...result will be:
 
 ```markdown
 ![[fname]]

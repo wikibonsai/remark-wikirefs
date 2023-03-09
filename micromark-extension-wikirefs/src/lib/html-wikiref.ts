@@ -1,6 +1,8 @@
+import path from 'path';
 import { merge } from 'lodash-es';
 import { combineHtmlExtensions } from 'micromark-util-combine-extensions';
 import type { HtmlExtension } from 'micromark-util-types';
+import * as wikirefs from 'wikirefs';
 import type {
   ReqHtmlOpts,
   OptAttr,
@@ -18,7 +20,11 @@ export function htmlWikiRefs(this: any, opts: Partial<WikiRefsOptions> = {}): Ht
   // opts
   const defaults: ReqHtmlOpts = {
     resolveHtmlText: (fname: string) => fname.replace(/-/g, ' '),
-    resolveHtmlHref: (fname: string) => '/' + fname.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, ''),
+    resolveHtmlHref: (fname: string) => {
+      const extname: string = wikirefs.isMedia(fname) ? path.extname(fname) : '';
+      fname = fname.replace(extname, '');
+      return '/' + fname.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') + extname;
+    },
     resolveEmbedContent: (fname: string) => fname + ' embed content',
     baseUrl: '',
     cssNames: {

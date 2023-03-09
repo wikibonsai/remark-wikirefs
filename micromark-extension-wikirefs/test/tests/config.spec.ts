@@ -108,4 +108,6 @@ describe('configs', () => {
     ] as WikiRefTestCase[]);
     it.skip('wikiembed config cases', () => { return; });
 
+  });
+
 });

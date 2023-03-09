@@ -8,8 +8,6 @@ import path from 'path';
 import * as wikirefs from 'wikirefs';
 
 
-// leaving off return type 'HtmlExtension' due to:
-//  Type '(this: any, token: Token) => void' is not assignable to type '() => void'.ts(2322)
 export function htmlWikiEmbeds(this: any, opts: ReqHtmlOpts): HtmlExtension {
   // note: enter/exit keys should match a token name
   return {
@@ -23,14 +21,12 @@ export function htmlWikiEmbeds(this: any, opts: ReqHtmlOpts): HtmlExtension {
   };
 
   function enterWikiEmbed (this: any): void {
-    // console.log('enterWikiEmbed');
     let stack: WikiEmbedData[] = this.getData('WikiEmbedStack');
     if (!stack) this.setData('WikiEmbedStack', (stack = []));
     stack.push({} as WikiEmbedData);
   }
 
   function exitFileNameTxt (this: any, token: Token): void {
-    // console.log('exitFileNameTxt');
     const filename: string = this.sliceSerialize(token);
     const stack: WikiEmbedData[] = this.getData('WikiEmbedStack');
     const current: WikiEmbedData = top(stack);
@@ -91,7 +87,7 @@ export function htmlWikiEmbeds(this: any, opts: ReqHtmlOpts): HtmlExtension {
 
   function exitWikiEmbed (this: any): void {
     const wikiEmbed: WikiEmbedData = this.getData('WikiEmbedStack').pop();
-
+    // init vars
     const filename: string | null = wikiEmbed.filename;
     const filenameSlug: string = filename.trim().toLowerCase().replace(/ /g, '-');//.replace(/[^\w-]+/g, '');
     const mediaExt: string = path.extname(filename).toLowerCase();
