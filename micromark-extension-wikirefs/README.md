@@ -208,12 +208,12 @@ let syntaxOpts = {
 ```js
 // defaults
 let htmlOpts = {
-    resolveHtmlText: (fname: string) => fname.replace(/-/g, ' '),
     resolveHtmlHref: (fname: string) => {
       const extname: string = wikirefs.isMedia(fname) ? path.extname(fname) : '';
       fname = fname.replace(extname, '');
       return '/' + fname.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') + extname;
     },
+    resolveHtmlText: (fname: string) => fname.replace(/-/g, ' '),
     resolveEmbedContent: (fname: string) => fname + ' embed content',
     baseUrl: '',
     cssNames: {

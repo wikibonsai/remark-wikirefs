@@ -364,12 +364,12 @@ For more on syntax specification, see the [wikirefs](https://github.com/wikibons
 ```js
 // defaults
 let remarkOpts = {
-    resolveHtmlText: (fname: string) => fname.replace(/-/g, ' '),
     resolveHtmlHref: (fname: string) => {
       const extname: string = wikirefs.isMedia(fname) ? path.extname(fname) : '';
       fname = fname.replace(extname, '');
       return '/' + fname.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') + extname;
     },
+    resolveHtmlText: (fname: string) => fname.replace(/-/g, ' '),
     // requires mdast version -- resolves to node, not a string
     resolveEmbedContent: (fname: string) => {
       return {
