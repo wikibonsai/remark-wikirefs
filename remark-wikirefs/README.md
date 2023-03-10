@@ -110,6 +110,18 @@ Will produce the following `attrbox` node:
 }
 ```
 
+To use only the wikiattr construct:
+
+```javascript
+import unified from 'unified';
+import markdown from 'remark-parse';
+import { remarkWikiAttrs } from 'remark-wikirefs';
+
+let processor = unified()
+    .use(markdown)
+    .use(remarkWikiAttrs, {})
+```
+
 #### WikiLinks
 
 Running the processor on the following markdown:
@@ -142,6 +154,18 @@ Will produce the following `wikilink` node:
     },
   }
 }
+```
+
+To use only the wikilink construct:
+
+```javascript
+import unified from 'unified';
+import markdown from 'remark-parse';
+import { remarkWikiLinks } from 'remark-wikirefs';
+
+let processor = unified()
+    .use(markdown)
+    .use(remarkWikiLinks, {})
 ```
 
 #### WikiEmbeds
@@ -353,6 +377,18 @@ Will produce the following `wikiembed` node:
     }],
   }],
 }
+```
+
+To use only the wikiembed construct:
+
+```javascript
+import unified from 'unified';
+import markdown from 'remark-parse';
+import { remarkWikiEmbeds } from 'remark-wikirefs';
+
+let processor = unified()
+    .use(markdown)
+    .use(remarkWikiEmbeds, {})
 ```
 
 ## Syntax

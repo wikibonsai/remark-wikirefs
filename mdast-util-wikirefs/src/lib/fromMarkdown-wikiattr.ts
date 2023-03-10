@@ -2,15 +2,16 @@ import path from 'path';
 import { merge } from 'lodash-es';
 import * as wikirefs from 'wikirefs';
 import type { CompileContext, Extension as FromMarkdownExtension } from 'mdast-util-from-markdown';
+import type { Node } from 'mdast-util-from-markdown/lib';
 import type { Token } from 'micromark-util-types';
 import type {
   AttrData,
+  DefaultsWikiRefs,
+  DefaultsWikiAttrs,
   WikiAttrData,
-  OptAttr,
-  OptCssNames,
   WikiRefsOptions,
 } from 'micromark-extension-wikirefs';
-import { Node } from 'mdast-util-from-markdown/lib';
+import { defaultsWikiRefs, defaultsWikiAttrs } from 'micromark-extension-wikirefs';
 
 import type {
   AttrBoxNode,
@@ -22,53 +23,11 @@ import type {
 } from '../util/types';
 
 
-// required options
-interface ReqOpts {
-  resolveHtmlText: (fname: string) => string | undefined;
-  resolveHtmlHref: (fname: string) => string | undefined;
-  resolveDocType?: (fname: string) => string | undefined;
-  baseUrl: string;
-  attrs: OptAttr;
-  cssNames: OptCssNames;
-  useCaml: boolean;
-}
-
 // by the time 'wikiAttrFromMarkdown()' is run, attributes should already have been
 // grouped in the front of the token stream (from 'resolveWikiAttrs()')
 
 export function fromMarkdownWikiAttrs(opts?: Partial<WikiRefsOptions>): FromMarkdownExtension {
-  // opts
-  const defaults: ReqOpts = {
-    resolveHtmlHref: (fname: string) => {
-      const extname: string = wikirefs.isMedia(fname) ? path.extname(fname) : '';
-      fname = fname.replace(extname, '');
-      return '/' + fname.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') + extname;
-    },
-    resolveHtmlText: (fname: string) => fname.replace(/-/g, ' '),
-    baseUrl: '',
-    attrs: {
-      enable: true,
-      render: true,
-      title: 'Attributes',
-    } as OptAttr,
-    cssNames: {
-      // wiki
-      wiki: 'wiki',
-      invalid: 'invalid',
-      // kinds
-      attr: 'attr',
-      link: 'link',
-      type: 'type',
-      embed: 'embed',
-      reftype: 'reftype__',
-      doctype: 'doctype__',
-      // attr
-      attrbox: 'attrbox',
-      attrboxTitle: 'attrbox-title',
-    } as OptCssNames,
-    useCaml: false,
-  };
-  const fullOpts: ReqOpts = merge(defaults, opts);
+  const fullOpts: DefaultsWikiRefs & DefaultsWikiAttrs = merge(defaultsWikiRefs(), defaultsWikiAttrs(), opts);
 
   // note: enter/exit keys should match a token name
   if (fullOpts.useCaml) {

@@ -4,58 +4,20 @@ import * as wikirefs from 'wikirefs';
 import type { CompileContext, Extension as FromMarkdownExtension } from 'mdast-util-from-markdown';
 import type { Token } from 'micromark-util-types';
 import type {
-  OptAttr,
-  OptCssNames,
+  DefaultsWikiRefs,
+  DefaultsWikiLinks,
   WikiRefsOptions,
   WikiLinkData,
 } from 'micromark-extension-wikirefs';
+import { defaultsWikiRefs, defaultsWikiLinks } from 'micromark-extension-wikirefs';
+
 import { Node } from 'mdast-util-from-markdown/lib';
 
 import type { WikiLinkNode } from '../util/types';
 
 
-// required options
-interface ReqOpts {
-  resolveHtmlText: (fname: string) => string | undefined;
-  resolveHtmlHref: (fname: string) => string | undefined;
-  resolveDocType?: (fname: string) => string | undefined;
-  baseUrl: string;
-  attrs: OptAttr;
-  cssNames: OptCssNames;
-}
-
 export function fromMarkdownWikiLinks(opts?: Partial<WikiRefsOptions>): FromMarkdownExtension {
-  // opts
-  const defaults: ReqOpts = {
-    resolveHtmlHref: (fname: string) => {
-      const extname: string = wikirefs.isMedia(fname) ? path.extname(fname) : '';
-      fname = fname.replace(extname, '');
-      return '/' + fname.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') + extname;
-    },
-    resolveHtmlText: (fname: string) => fname.replace(/-/g, ' '),
-    baseUrl: '',
-    attrs: {
-      enable: true,
-      render: true,
-      title: 'Attributes',
-    } as OptAttr,
-    cssNames: {
-      // wiki
-      wiki: 'wiki',
-      invalid: 'invalid',
-      // kinds
-      attr: 'attr',
-      link: 'link',
-      type: 'type',
-      embed: 'embed',
-      reftype: 'reftype__',
-      doctype: 'doctype__',
-      // attr
-      attrbox: 'attrbox',
-      attrboxTitle: 'attrbox-title',
-    } as OptCssNames,
-  };
-  const fullOpts: ReqOpts = merge(defaults, opts);
+  const fullOpts: DefaultsWikiRefs & DefaultsWikiLinks = merge(defaultsWikiRefs(), defaultsWikiLinks(), opts);
 
   // note: enter/exit keys should match a token name
   return {

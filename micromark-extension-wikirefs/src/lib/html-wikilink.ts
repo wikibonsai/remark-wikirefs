@@ -1,12 +1,17 @@
+import { merge } from 'lodash-es';
 import { ok as assert } from 'uvu/assert';
 import * as wikirefs from 'wikirefs';
 import type { CompileContext, HtmlExtension } from 'micromark-util-types';
 import type { Token } from 'micromark/dev/lib/initialize/document';
 
-import type { WikiLinkData, ReqHtmlOpts } from '../util/types';
+import type { WikiLinkData, WikiRefsOptions } from '../util/types';
+import type { DefaultsWikiRefs, DefaultsWikiLinks }  from '../util/defaults';
+import { defaultsWikiRefs, defaultsWikiLinks } from '../util/defaults';
 
 
-export function htmlWikiLinks(opts: ReqHtmlOpts): HtmlExtension {
+export function htmlWikiLinks(opts: Partial<WikiRefsOptions>): HtmlExtension {
+  const fullOpts: DefaultsWikiRefs & DefaultsWikiLinks = merge(defaultsWikiRefs(), defaultsWikiLinks(), opts);
+
   // note: enter/exit keys should match a token name
   return {
     enter: {
@@ -65,43 +70,41 @@ export function htmlWikiLinks(opts: ReqHtmlOpts): HtmlExtension {
     const label: string | undefined    = wikiLink.label;
     const linktype: string | undefined = wikiLink.linktype;
     // resolvers
-    const htmlHref: string | undefined = opts.resolveHtmlHref(filename);
-    // @ts-expect-error: check occurs in ternary operator
-    let   htmlText: string             = (opts.resolveHtmlText(filename) !== undefined) ? opts.resolveHtmlText(filename) : filename;
-    // @ts-expect-error: check occurs in ternary operator
-    const doctype : string             = (opts.resolveDocType && opts.resolveDocType(filename) !== undefined)            ? opts.resolveDocType(filename)  : '';
+    const htmlHref: string | undefined = fullOpts.resolveHtmlHref(filename);
+    let   htmlText: string             = (fullOpts.resolveHtmlText(filename) !== undefined) ? fullOpts.resolveHtmlText(filename) : filename;
+    const doctype : string             = (fullOpts.resolveDocType && (fullOpts.resolveDocType(filename) !== undefined))          ? fullOpts.resolveDocType(filename)  : '';
     // open
     let htmlOpen: string = '';
     if (htmlHref === undefined) {
-      htmlOpen = `<a class="${opts.cssNames.wiki} ${opts.cssNames.link} ${opts.cssNames.invalid}">`;
+      htmlOpen = `<a class="${fullOpts.cssNames.wiki} ${fullOpts.cssNames.link} ${fullOpts.cssNames.invalid}">`;
     } else {
       // css
       const cssClassArray: string[] = [];
       // due to defaults, this should always be true...this if-check is mostly to make typescript happy
-      if (opts.cssNames) {
+      if (fullOpts.cssNames) {
         // valid
-        cssClassArray.push(opts.cssNames.wiki);
-        cssClassArray.push(opts.cssNames.link);
+        cssClassArray.push(fullOpts.cssNames.wiki);
+        cssClassArray.push(fullOpts.cssNames.link);
         // linktype
         if (linktype) {
           // typed
-          const typeCssClass: string = opts.cssNames.type;
+          const typeCssClass: string = fullOpts.cssNames.type;
           if (typeCssClass !== undefined && typeCssClass.length !== 0) {
             cssClassArray.push(typeCssClass);
           }
           // linktype
           const linkTypeSlug: string = linktype.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
-          cssClassArray.push(opts.cssNames.reftype + linkTypeSlug);
+          cssClassArray.push(fullOpts.cssNames.reftype + linkTypeSlug);
         }
         // doctype
         if (doctype.length > 0) {
           const docTypeSlug: string | undefined = doctype.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
-          cssClassArray.push(opts.cssNames.doctype + docTypeSlug);
+          cssClassArray.push(fullOpts.cssNames.doctype + docTypeSlug);
         }
       }
       const css: string | null = cssClassArray.join(' ');
       if (css === null) { console.warn('\'css\' is null'); }
-      htmlOpen = `<a class="${css}" href="${opts.baseUrl + htmlHref}" data-href="${opts.baseUrl + htmlHref}">`;
+      htmlOpen = `<a class="${css}" href="${fullOpts.baseUrl + htmlHref}" data-href="${fullOpts.baseUrl + htmlHref}">`;
     }
     // invalid
     if (htmlHref === undefined) {

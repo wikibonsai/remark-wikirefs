@@ -2,71 +2,22 @@ import path from 'path';
 import { merge } from 'lodash-es';
 import * as wikirefs from 'wikirefs';
 import type { CompileContext, Extension as FromMarkdownExtension } from 'mdast-util-from-markdown';
+import { Node } from 'mdast-util-from-markdown/lib';
 import type { Token } from 'micromark-util-types';
 import type {
-  OptCssNames,
+  DefaultsWikiRefs,
+  DefaultsWikiEmbeds,
   WikiRefsOptions,
   WikiEmbedData,
-  OptEmbed,
 } from 'micromark-extension-wikirefs';
-import { Node } from 'mdast-util-from-markdown/lib';
+
+import { defaultsWikiRefs, defaultsWikiEmbeds } from 'micromark-extension-wikirefs';
 
 import type { WikiEmbedNode } from '../util/types';
 
 
-// required options
-interface ReqOpts {
-  resolveHtmlText: (fname: string) => string | undefined;
-  resolveHtmlHref: (fname: string) => string | undefined;
-  resolveDocType?: (fname: string) => string | undefined;
-  resolveEmbedContent: (fname: string) => string | any | undefined;
-  baseUrl: string;
-  embeds: OptEmbed;
-  cssNames: OptCssNames;
-}
-
 export function fromMarkdownWikiEmbeds(opts?: Partial<WikiRefsOptions>): FromMarkdownExtension {
-  // opts
-  const defaults: ReqOpts = {
-    resolveHtmlHref: (fname: string) => {
-      const extname: string = wikirefs.isMedia(fname) ? path.extname(fname) : '';
-      fname = fname.replace(extname, '');
-      return '/' + fname.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') + extname;
-    },
-    resolveHtmlText: (fname: string) => fname.replace(/-/g, ' '),
-    resolveEmbedContent: (fname: string) => fname + ' embed content',
-    baseUrl: '',
-    embeds: {
-      enable: true,
-      title: 'Embed Content',
-      errorContent: 'Error: Content not found for ',
-    },
-    cssNames: {
-      // wiki
-      wiki: 'wiki',
-      invalid: 'invalid',
-      // kinds
-      attr: 'attr',
-      link: 'link',
-      type: 'type',
-      embed: 'embed',
-      reftype: 'reftype__',
-      doctype: 'doctype__',
-      // embed
-      embedWrapper: 'embed-wrapper',
-      embedTitle: 'embed-title',
-      embedLink: 'embed-link',
-      embedContent: 'embed-content',
-      embedLinkIcon: 'embed-link-icon',
-      linkIcon: 'link-icon',
-      embedMedia: 'embed-media',
-      embedAudio: 'embed-audio',
-      embedDoc: 'embed-doc',
-      embedImage: 'embed-image',
-      embedVideo: 'embed-video',
-    } as OptCssNames,
-  };
-  const fullOpts: ReqOpts = merge(defaults, opts);
+  const fullOpts: DefaultsWikiRefs & DefaultsWikiEmbeds = merge(defaultsWikiRefs(), defaultsWikiEmbeds(), opts);
 
   // note: enter/exit keys should match a token name
   return {

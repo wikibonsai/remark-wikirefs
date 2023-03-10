@@ -37,6 +37,7 @@ export interface OptAttr {
 
 export interface OptLink {
   enable: boolean;
+  overrideEmbeds: boolean;
 }
 
 export interface OptEmbed {
@@ -68,30 +69,8 @@ export interface WikiRefsOptions {
   // wiki kind options
   attrs: Partial<OptAttr | OptAttrToMkdn>;
   links: OptLink;
+  embeds: OptEmbed;
   // caml
-  useCaml: boolean;
-}
-
-// required options
-
-export interface ReqHtmlOpts {
-  resolveHtmlHref: (fname: string) => string | undefined;
-  resolveHtmlText: (fname: string) => string | undefined;
-  resolveDocType?: (fname: string) => string | undefined;
-  // embed-only -- micromark returns html string; mdast + remark returns a string or mdast node
-  resolveEmbedContent: (fname: string) => string | undefined;
-  baseUrl: string;
-  attrs: OptAttr;
-  links: OptLink;
-  embeds: OptEmbed;
-  cssNames: OptCssNames;
-  useCaml: boolean;
-}
-
-export interface ReqSyntaxOpts {
-  attrs: OptAttr;
-  links: OptLink;
-  embeds: OptEmbed;
   useCaml: boolean;
 }
 

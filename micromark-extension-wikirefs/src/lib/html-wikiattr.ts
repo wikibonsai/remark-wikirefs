@@ -1,12 +1,17 @@
+import { merge } from 'lodash-es';
 import { ok as assert } from 'uvu/assert';
 import * as wikirefs from 'wikirefs';
 import type { CompileContext, HtmlExtension } from 'micromark-util-types';
 import { Token } from 'micromark/lib/create-tokenizer';
 
-import type { AttrData, WikiAttrData, ReqHtmlOpts } from '../util/types';
+import type { AttrData, WikiAttrData, WikiRefsOptions } from '../util/types';
+import type { DefaultsWikiRefs, DefaultsWikiAttrs }  from '../util/defaults';
+import { defaultsWikiRefs, defaultsWikiAttrs } from '../util/defaults';
 
 
-export function htmlWikiAttrs(fullOpts: ReqHtmlOpts): HtmlExtension {
+export function htmlWikiAttrs(opts?: Partial<WikiRefsOptions>): HtmlExtension {
+  const fullOpts: DefaultsWikiRefs & DefaultsWikiAttrs = merge(defaultsWikiRefs(), defaultsWikiAttrs(), opts);
+
   // note: enter/exit keys should match a token name (see 'cross-module.spec.ts')
   if (fullOpts.useCaml) {
     return {

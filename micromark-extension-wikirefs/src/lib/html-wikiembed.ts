@@ -1,13 +1,18 @@
-import { ok as assert } from 'uvu/assert';
 import path from 'path';
+import { merge } from 'lodash-es';
+import { ok as assert } from 'uvu/assert';
 import * as wikirefs from 'wikirefs';
 import type { CompileContext, HtmlExtension } from 'micromark-util-types';
 import type { Token } from 'micromark/dev/lib/initialize/document';
 
-import type { WikiEmbedData, ReqHtmlOpts } from '../util/types';
+import type { WikiEmbedData, WikiRefsOptions } from '../util/types';
+import type { DefaultsWikiRefs, DefaultsWikiEmbeds }  from '../util/defaults';
+import { defaultsWikiRefs, defaultsWikiEmbeds } from '../util/defaults';
 
 
-export function htmlWikiEmbeds(opts: ReqHtmlOpts): HtmlExtension {
+export function htmlWikiEmbeds(opts: Partial<WikiRefsOptions>): HtmlExtension {
+  const fullOpts: DefaultsWikiRefs & DefaultsWikiEmbeds = merge(defaultsWikiRefs(), defaultsWikiEmbeds(), opts);
+
   // note: enter/exit keys should match a token name
   return {
     enter: {
@@ -30,8 +35,8 @@ export function htmlWikiEmbeds(opts: ReqHtmlOpts): HtmlExtension {
     const stack: WikiEmbedData[] = this.getData('WikiEmbedStack') as unknown as WikiEmbedData[];
     const current: WikiEmbedData = top(stack);
     current.filename = filename;
-    if (opts.resolveDocType) {
-      const resolvedDocType: string | undefined = opts.resolveDocType(filename);
+    if (fullOpts.resolveDocType) {
+      const resolvedDocType: string | undefined = fullOpts.resolveDocType(filename);
       current.doctype = resolvedDocType ? resolvedDocType : '';
     }
   }
@@ -94,11 +99,9 @@ export function htmlWikiEmbeds(opts: ReqHtmlOpts): HtmlExtension {
     const mediaExt: string = path.extname(filename).toLowerCase();
     const mime: string = path.extname(filename).replace('.', '').toLowerCase();
     // resolvers
-    const htmlHref: string | undefined = opts.resolveHtmlHref(filename);
-    // @ts-expect-error: check occurs in ternary operator
-    const htmlText: string             = (opts.resolveHtmlText(filename) !== undefined) ? opts.resolveHtmlText(filename) : filename;
-    // @ts-expect-error: check occurs in ternary operator
-    const doctype : string             = (opts.resolveDocType && opts.resolveDocType(filename) !== undefined)            ? opts.resolveDocType(filename)  : '';
+    const htmlHref: string | undefined = fullOpts.resolveHtmlHref(filename);
+    const htmlText: string             = (fullOpts.resolveHtmlText(filename) !== undefined) ? fullOpts.resolveHtmlText(filename) : filename;
+    const doctype : string             = (fullOpts.resolveDocType && (fullOpts.resolveDocType(filename) !== undefined))          ? fullOpts.resolveDocType(filename)  : '';
     ////
     // media
     // open : wikiembed
@@ -107,31 +110,31 @@ export function htmlWikiEmbeds(opts: ReqHtmlOpts): HtmlExtension {
       // inner
       // audio
       if (wikirefs.CONST.EXTS.AUD.has(mediaExt)) {
-        this.tag(`<span class="${opts.cssNames.embedMedia}" src="${opts.baseUrl + filenameSlug}" alt="${filenameSlug}">`);
+        this.tag(`<span class="${fullOpts.cssNames.embedMedia}" src="${fullOpts.baseUrl + filenameSlug}" alt="${filenameSlug}">`);
         if (!htmlHref) { 
-          this.tag(`<audio class="${opts.cssNames.embedAudio}" controls type="audio/${mime}"></audio>`);
+          this.tag(`<audio class="${fullOpts.cssNames.embedAudio}" controls type="audio/${mime}"></audio>`);
         } else {
-          this.tag(`<audio class="${opts.cssNames.embedAudio}" controls type="audio/${mime}" src="${opts.baseUrl + htmlHref}"></audio>`);
+          this.tag(`<audio class="${fullOpts.cssNames.embedAudio}" controls type="audio/${mime}" src="${fullOpts.baseUrl + htmlHref}"></audio>`);
         }
       // image
       } else if (wikirefs.CONST.EXTS.IMG.has(mediaExt)) {
-        this.tag(`<span class="${opts.cssNames.embedMedia}" src="${opts.baseUrl + filenameSlug}" alt="${filenameSlug}">`);
+        this.tag(`<span class="${fullOpts.cssNames.embedMedia}" src="${fullOpts.baseUrl + filenameSlug}" alt="${filenameSlug}">`);
         if (!htmlHref) {
-          this.tag(`<img class="${opts.cssNames.embedImage}">`);
+          this.tag(`<img class="${fullOpts.cssNames.embedImage}">`);
         } else {
-          this.tag(`<img class="${opts.cssNames.embedImage}" src="${opts.baseUrl + htmlHref}">`);
+          this.tag(`<img class="${fullOpts.cssNames.embedImage}" src="${fullOpts.baseUrl + htmlHref}">`);
         }
       // video
       } else if (wikirefs.CONST.EXTS.VID.has(mediaExt)) {
-        this.tag(`<span class="${opts.cssNames.embedMedia}" src="${opts.baseUrl + filenameSlug}" alt="${filenameSlug}">`);
+        this.tag(`<span class="${fullOpts.cssNames.embedMedia}" src="${fullOpts.baseUrl + filenameSlug}" alt="${filenameSlug}">`);
         if (!htmlHref) {
-          this.tag(`<video class="${opts.cssNames.embedVideo}" controls type="video/${mime}"></video>`);
+          this.tag(`<video class="${fullOpts.cssNames.embedVideo}" controls type="video/${mime}"></video>`);
         } else {
-          this.tag(`<video class="${opts.cssNames.embedVideo}" controls type="video/${mime}" src="${opts.baseUrl + htmlHref}"></video>`);
+          this.tag(`<video class="${fullOpts.cssNames.embedVideo}" controls type="video/${mime}" src="${fullOpts.baseUrl + htmlHref}"></video>`);
         }
       } else {
         // note: this is probably not technically possible (due to 'wikirefs.isMedia()' check)
-        this.tag(`<span class="${opts.cssNames.embedMedia} ${opts.cssNames.invalid}">`);
+        this.tag(`<span class="${fullOpts.cssNames.embedMedia} ${fullOpts.cssNames.invalid}">`);
         this.raw('media error');
       }
       // close
@@ -141,24 +144,24 @@ export function htmlWikiEmbeds(opts: ReqHtmlOpts): HtmlExtension {
     // markdown
     } else {
       // open : wrapper
-      this.tag(`<div class="${opts.cssNames.embedWrapper}">`);
+      this.tag(`<div class="${fullOpts.cssNames.embedWrapper}">`);
 
       // open : title
-      this.tag(`<div class="${opts.cssNames.embedTitle}">`);
+      this.tag(`<div class="${fullOpts.cssNames.embedTitle}">`);
       if (!htmlHref) {
-        this.tag(`<a class="${opts.cssNames.wiki} ${opts.cssNames.embed} ${opts.cssNames.invalid}">`);
+        this.tag(`<a class="${fullOpts.cssNames.wiki} ${fullOpts.cssNames.embed} ${fullOpts.cssNames.invalid}">`);
       } else {
         // build css string
         const cssClassArray: string[] = [];
-        cssClassArray.push(opts.cssNames.wiki);
-        cssClassArray.push(opts.cssNames.embed);
+        cssClassArray.push(fullOpts.cssNames.wiki);
+        cssClassArray.push(fullOpts.cssNames.embed);
         // '<doctype>'
         if (doctype.length > 0) {
           const docTypeSlug: string = doctype.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
-          cssClassArray.push(opts.cssNames.doctype + docTypeSlug);
+          cssClassArray.push(fullOpts.cssNames.doctype + docTypeSlug);
         }
         const css: string = cssClassArray.join(' ');
-        this.tag(`<a class="${css}" href="${opts.baseUrl + htmlHref}" data-href="${opts.baseUrl + htmlHref}">`);
+        this.tag(`<a class="${css}" href="${fullOpts.baseUrl + htmlHref}" data-href="${fullOpts.baseUrl + htmlHref}">`);
       }
       // inner : title
       this.raw(htmlText);
@@ -167,24 +170,24 @@ export function htmlWikiEmbeds(opts: ReqHtmlOpts): HtmlExtension {
       this.tag('</div>');
 
       // open : embed link
-      this.tag(`<div class="${opts.cssNames.embedLink}">`);
+      this.tag(`<div class="${fullOpts.cssNames.embedLink}">`);
       if (!htmlHref) {
-        this.tag(`<a class="${opts.cssNames.embedLinkIcon} ${opts.cssNames.invalid}">`);
+        this.tag(`<a class="${fullOpts.cssNames.embedLinkIcon} ${fullOpts.cssNames.invalid}">`);
       } else {
-        this.tag(`<a class="${opts.cssNames.embedLinkIcon}" href="${opts.baseUrl + htmlHref}" data-href="${opts.baseUrl + htmlHref}">`);
+        this.tag(`<a class="${fullOpts.cssNames.embedLinkIcon}" href="${fullOpts.baseUrl + htmlHref}" data-href="${fullOpts.baseUrl + htmlHref}">`);
       }
       // inner : embed link
-      this.tag(`<i class="${opts.cssNames.linkIcon}"></i>`);
+      this.tag(`<i class="${fullOpts.cssNames.linkIcon}"></i>`);
       // close : embed link
       this.tag('</a>');
       this.tag('</div>');
 
       // open : embed content
-      this.tag(`<div class="${opts.cssNames.embedContent}">`);
+      this.tag(`<div class="${fullOpts.cssNames.embedContent}">`);
       // inner : embed content
-      const htmlContent: string | undefined = opts.resolveEmbedContent(filename);
+      const htmlContent: string | undefined = fullOpts.resolveEmbedContent(filename);
       if (!htmlContent) {
-        this.raw(opts.embeds.errorContent + '\'' + filename + '\'');
+        this.raw(fullOpts.embeds.errorContent + '\'' + filename + '\'');
       } else {
         this.raw(htmlContent);
       }

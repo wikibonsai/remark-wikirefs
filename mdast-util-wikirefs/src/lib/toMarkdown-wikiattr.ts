@@ -1,4 +1,5 @@
 import { merge } from 'lodash-es';
+import * as wikirefs from 'wikirefs';
 import * as Uni from 'unist';
 import type {
   Handlers,
@@ -6,39 +7,19 @@ import type {
 } from 'mdast-util-to-markdown';
 import type { ConstructName, Context, Handle, SafeOptions } from 'mdast-util-to-markdown';
 import { safe } from 'mdast-util-to-markdown/lib/util/safe.js';
-
-import * as wikirefs from 'wikirefs';
-
 import type {
-  OptToMarkdown,
+  DefaultsWikiRefs,
+  DefaultsWikiAttrs,
   WikiAttrData,
   WikiRefsOptions,
 } from 'micromark-extension-wikirefs';
+import { defaultsWikiRefs, defaultsWikiAttrs } from 'micromark-extension-wikirefs';
 
 import type { AttrBoxNode } from '../util/types';
 
 
-// required options
-interface ReqOpts {
-  attrs: {
-    enable: boolean;
-    toMarkdown: OptToMarkdown;
-  };
-}
-
 export function toMarkdownWikiAttrs(opts: Partial<WikiRefsOptions> = {}): ToMarkdownExtension {
-  // opts
-  const defaults: ReqOpts = {
-    attrs: {
-      enable: true,
-      toMarkdown: {
-        format: 'none',
-        listKind: 'mkdn',
-        prefixed: true,
-      } as OptToMarkdown,
-    },
-  };
-  const fullOpts: ReqOpts = merge(defaults, opts);
+  const fullOpts: DefaultsWikiRefs & DefaultsWikiAttrs = merge(defaultsWikiRefs(), defaultsWikiAttrs(), opts);
 
   return {
     // TODO: I don't fully understand what this does, but I did my

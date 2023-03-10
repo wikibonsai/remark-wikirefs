@@ -14,7 +14,7 @@ import { WikiRefToken } from '../util/const';
 
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const syntaxWikiEmbeds = (function (opts?: Partial<WikiRefsOptions>): Extension {
+export function syntaxWikiEmbeds(opts?: Partial<WikiRefsOptions>): Extension {
   // hooks
   return {
     text: {
@@ -48,9 +48,8 @@ export const syntaxWikiEmbeds = (function (opts?: Partial<WikiRefsOptions>): Ext
     // 'continue': continue on to the next function ('ok')
 
     function start (code: Code): State | void {
-      // console.log('start: ', code, String.fromCharCode(<number> code));
       // invalid
-      if (code !== wikirefs.CONST.MARKER.EMBED.charCodeAt(cursorEmbedMarker)) {
+      if ((code !== null) && (String.fromCharCode(code) !== wikirefs.CONST.MARKER.EMBED)) {
         return nok(code);
       }
       // continue...
@@ -60,7 +59,6 @@ export const syntaxWikiEmbeds = (function (opts?: Partial<WikiRefsOptions>): Ext
     }
 
     function consumeEmbedMarker (code: Code): State | void {
-      // console.log('consumeEmbedMarker: ', code, String.fromCharCode(<number> code));
       // end
       if (cursorEmbedMarker === wikirefs.CONST.MARKER.EMBED.length) {
         effects.exit(WikiRefToken.wikiEmbedMarker);
@@ -77,8 +75,7 @@ export const syntaxWikiEmbeds = (function (opts?: Partial<WikiRefsOptions>): Ext
       return consumeEmbedMarker;
     }
 
-    function consumeLeftMarker (code: Code) {
-      // console.log('consumeLeftMarker: ', code, String.fromCharCode(<number> code));
+    function consumeLeftMarker (code: Code): State | void {
       // end
       if (cursorLeftMarker === wikirefs.CONST.MARKER.OPEN.length) {
         effects.exit(WikiRefToken.wikiLeftMarker);
@@ -95,8 +92,7 @@ export const syntaxWikiEmbeds = (function (opts?: Partial<WikiRefsOptions>): Ext
       return consumeLeftMarker;
     }
 
-    function consumeFileName (code: Code) {
-      // console.log('consumeFileName: ', code, String.fromCharCode(<number> code));
+    function consumeFileName (code: Code): State | void {
       // end
       if (code === wikirefs.CONST.MARKER.CLOSE.charCodeAt(cursorRightMarker)) {
         if (!hasFileName) return nok(code);
@@ -105,7 +101,7 @@ export const syntaxWikiEmbeds = (function (opts?: Partial<WikiRefsOptions>): Ext
         return consumeRightMarker(code);
       }
       // invalid
-      if (markdownLineEnding(code) || code === codes.eof) {
+      if (markdownLineEnding(code) || (code === codes.eof)) {
         return nok(code);
       }
       if (!wikirefs.RGX.VALID_CHARS.FILENAME.test(String.fromCharCode(<number> code))) {
@@ -120,11 +116,9 @@ export const syntaxWikiEmbeds = (function (opts?: Partial<WikiRefsOptions>): Ext
     }
 
     // fin(ish)
-    function consumeRightMarker (code: Code) {
-      // console.log('consumeRightMarker: ', code, String.fromCharCode(<number> code));
+    function consumeRightMarker (code: Code): State | void {
       // end
       if (cursorRightMarker === wikirefs.CONST.MARKER.CLOSE.length) {
-        // console.log('exiting...');
         effects.exit(WikiRefToken.wikiRightMarker);
         effects.exit(WikiRefToken.wikiEmbed);
         return ok(code);
@@ -139,4 +133,4 @@ export const syntaxWikiEmbeds = (function (opts?: Partial<WikiRefsOptions>): Ext
       return consumeRightMarker;
     }
   }
-});
+}

@@ -12,6 +12,10 @@ export { htmlWikiLinks } from './lib/html-wikilink';
 export { htmlWikiEmbeds } from './lib/html-wikiembed';
 export { htmlWikiRefs } from './lib/html-wikiref';
 
+// option defaults
+
+export * from './util/defaults';
+
 /**********************************************/
 /*** !!! types need to be exported last !!! ***/
 /**********************************************/

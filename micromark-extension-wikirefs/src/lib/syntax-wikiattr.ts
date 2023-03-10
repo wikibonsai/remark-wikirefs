@@ -1,3 +1,4 @@
+import { merge } from 'lodash-es';
 import { ok as assert } from 'uvu/assert';
 import type { Event } from 'micromark/dev/lib/compile';
 import type { Tokenizer } from 'micromark/dev/lib/initialize/document';
@@ -15,7 +16,7 @@ import { factorySpace } from 'micromark-factory-space';
 
 import * as wikirefs from 'wikirefs';
 
-import type { WikiRefsOptions } from '../util/types';
+import type { OptAttr, WikiRefsOptions } from '../util/types';
 import {
   markdownBullet,
   refTypeUsableCharCodes,
@@ -23,7 +24,15 @@ import {
 } from '../util/const';
 
 
-export const syntaxWikiAttrs = (function (opts?: Partial<WikiRefsOptions>): Extension {
+export function syntaxWikiAttrs(opts?: Partial<WikiRefsOptions>): Extension {
+  // default opts
+  const defaults = {
+    attrs: {
+      title: 'Attributes',
+    } as OptAttr,
+    useCaml: false,
+  };
+  const fullOpts = merge(defaults, opts);
 
   const flow: ConstructRecord = {} as ConstructRecord;
   /* eslint-disable indent */
@@ -37,7 +46,7 @@ export const syntaxWikiAttrs = (function (opts?: Partial<WikiRefsOptions>): Exte
     if ((code !== null)) {
       // * if 'useCaml' is set to 'true', (if micromark-caml is installed), 
       // don't use local resolve function -- caml will handle it.
-      if (opts && !opts.useCaml) {
+      if (!fullOpts.useCaml) {
         flow[code] = {
           name: 'wikiattr',
           // from: https://github.com/micromark/micromark/blob/main/packages/micromark-util-types/index.js#L277
@@ -466,10 +475,10 @@ export const syntaxWikiAttrs = (function (opts?: Partial<WikiRefsOptions>): Exte
         return consumeRightMarker(code);
       }
       // invalid
-      if (markdownLineEnding(code) || code === codes.eof) {
+      if (markdownLineEnding(code) || (code === codes.eof)) {
         return nok(code);
       }
-      if (!wikirefs.RGX.VALID_CHARS.FILENAME.test(String.fromCharCode(<number> code))) {
+      if (!wikirefs.RGX.VALID_CHARS.FILENAME.test(String.fromCharCode(code))) {
         return nok(code);
       }
       // continue
@@ -565,4 +574,4 @@ export const syntaxWikiAttrs = (function (opts?: Partial<WikiRefsOptions>): Exte
       }
     }
   }
-});
+}

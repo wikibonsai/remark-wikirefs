@@ -1,7 +1,10 @@
+import { merge } from 'lodash-es';
 import type { ConstructRecord, Effects, State } from 'micromark/dev/lib/create-tokenizer';
 import type { Tokenizer } from 'micromark/dev/lib/initialize/document';
 import type { Code, Extension } from 'micromark-util-types';
-import { codes } from 'micromark-util-symbol/codes';
+import { constants } from 'micromark-util-symbol/constants.js';
+import { types } from 'micromark-util-symbol/types.js';
+import { codes } from 'micromark-util-symbol/codes.js';
 import {
   markdownLineEnding,
   markdownLineEndingOrSpace,
@@ -10,25 +13,56 @@ import {
 
 import * as wikirefs from 'wikirefs';
 
-import type { WikiRefsOptions } from '../util/types';
+import type { OptLink, WikiRefsOptions } from '../util/types';
 import { WikiRefToken } from '../util/const';
 
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const syntaxWikiLinks = (function (opts?: Partial<WikiRefsOptions>): Extension {
-  // hooks
-  return {
-    text: {
-      [codes.colon]: {
-        name: 'wikilink',
-        tokenize: tokenizeWikiLinks as Tokenizer,
-      },
-      [codes.leftSquareBracket]: {
-        name: 'wikilink',
-        tokenize: tokenizeWikiLinks as Tokenizer,
-      },
-    } as ConstructRecord,
+export function syntaxWikiLinks(opts?: Partial<WikiRefsOptions>): Extension {
+  // default opts
+  const defaults = {
+    links: {
+      overrideEmbeds: false,
+    } as Partial<OptLink>,
   };
+  const fullOpts = merge(defaults, opts);
+
+  // hooks
+  // default
+  if (!fullOpts.links.overrideEmbeds) {
+    return {
+      text: {
+        [codes.colon]: {
+          name: 'wikilink',
+          tokenize: tokenizeWikiLinks as Tokenizer,
+        },
+        [codes.leftSquareBracket]: {
+          name: 'wikilink',
+          tokenize: tokenizeWikiLinks as Tokenizer,
+        },
+      } as ConstructRecord,
+    };
+  // render [[wikilinks]] where ![[wikiembed]] syntax is used
+  } else {
+    return {
+      text: {
+        [codes.colon]: {
+          name: 'wikilink',
+          tokenize: tokenizeWikiLinks as Tokenizer,
+        },
+        [codes.leftSquareBracket]: {
+          name: 'wikilink',
+          tokenize: tokenizeWikiLinks as Tokenizer,
+        },
+        // todo: any way to make this a formal partialized tokenizer?
+        // skip over exclamation mark and render [[wikilink]]
+        [codes.exclamationMark]: {
+          name: 'wikilink',
+          tokenize: tokenizeWikiLinks as Tokenizer,
+        },
+      } as ConstructRecord,
+    };
+  }
 
   function tokenizeWikiLinks(effects: Effects, ok: State, nok: State): State {
     let hasLinkType: boolean;
@@ -43,6 +77,8 @@ export const syntaxWikiLinks = (function (opts?: Partial<WikiRefsOptions>): Exte
     let cursorLinkTypeMarker: number = 0;
     let cursorLeftMarker: number = 0;
     let cursorRightMarker: number = 0;
+    // for rendering wikiembeds as wikilinks -- skip over !
+    let cursorEmbedMarker: number = 0;
 
     return start;
 
@@ -56,7 +92,9 @@ export const syntaxWikiLinks = (function (opts?: Partial<WikiRefsOptions>): Exte
     function start (code: Code): State | void {
       // invalid
       if ((code !== wikirefs.CONST.MARKER.PREFIX.charCodeAt(cursorLinkTypePrefixMarker))
-      && (code !== wikirefs.CONST.MARKER.OPEN.charCodeAt(cursorLeftMarker))) {
+      && (code !== wikirefs.CONST.MARKER.OPEN.charCodeAt(cursorLeftMarker))
+      && (!fullOpts.links.overrideEmbeds && (code === codes.exclamationMark))
+      ) {
         return nok(code);
       }
       // continue...
@@ -71,12 +109,34 @@ export const syntaxWikiLinks = (function (opts?: Partial<WikiRefsOptions>): Exte
         effects.enter(WikiRefToken.wikiLeftMarker);
         return consumeLeftMarker(code);
       }
+      // !embed passthrough
+      if (code === codes.exclamationMark) {
+        effects.enter(WikiRefToken.wikiEmbed);
+        return consumeRawEmbedMarker(code);
+      }
       // invalid
       effects.exit(WikiRefToken.wikiLink);
       return nok(code);
     }
 
-    function consumeLinkTypePrefixMarker (code: Code) {
+    function consumeRawEmbedMarker (code: Code): State | void {
+      // end
+      if (cursorEmbedMarker === wikirefs.CONST.MARKER.EMBED.length) {
+        effects.exit(WikiRefToken.wikiEmbed);
+        effects.enter(WikiRefToken.wikiLeftMarker);
+        return consumeLeftMarker(code);
+      }
+      // invalid
+      if (code !== wikirefs.CONST.MARKER.EMBED.charCodeAt(cursorEmbedMarker)) {
+        return nok(code);
+      }
+      // continue...
+      effects.consume(code);
+      cursorEmbedMarker++;
+      return consumeRawEmbedMarker;
+    }
+
+    function consumeLinkTypePrefixMarker (code: Code): State | void {
       // end
       if (cursorLinkTypePrefixMarker === wikirefs.CONST.MARKER.PREFIX.length) {
         effects.exit(WikiRefToken.wikiRefTypePrefixMarker);
@@ -93,7 +153,7 @@ export const syntaxWikiLinks = (function (opts?: Partial<WikiRefsOptions>): Exte
       return consumeLinkTypePrefixMarker;
     }
 
-    function consumeLinkTypeTxt (code: Code) {
+    function consumeLinkTypeTxt (code: Code): State | void {
       // end
       if (code === wikirefs.CONST.MARKER.TYPE.charCodeAt(cursorLinkTypeMarker)) {
         if (!hasLinkType) return nok(code);
@@ -105,7 +165,7 @@ export const syntaxWikiLinks = (function (opts?: Partial<WikiRefsOptions>): Exte
       if (markdownLineEnding(code) || code === codes.eof) {
         return nok(code);
       }
-      if (!wikirefs.RGX.VALID_CHARS.TYPE.test(String.fromCharCode(<number> code))) {
+      if (!wikirefs.RGX.VALID_CHARS.TYPE.test(String.fromCharCode(code))) {
         return nok(code);
       }
       // continue
@@ -116,7 +176,7 @@ export const syntaxWikiLinks = (function (opts?: Partial<WikiRefsOptions>): Exte
       return consumeLinkTypeTxt;
     }
 
-    function consumeLinkTypeMarker (code: Code) {
+    function consumeLinkTypeMarker (code: Code): State | void {
       // end
       if (cursorLinkTypeMarker === wikirefs.CONST.MARKER.TYPE.length) {
         effects.exit(WikiRefToken.wikiRefTypeMarker);
@@ -133,7 +193,7 @@ export const syntaxWikiLinks = (function (opts?: Partial<WikiRefsOptions>): Exte
       return consumeLinkTypeMarker;
     }
 
-    function consumeLeftMarker (code: Code) {
+    function consumeLeftMarker (code: Code): State | void {
       // end
       if (cursorLeftMarker === wikirefs.CONST.MARKER.OPEN.length) {
         effects.exit(WikiRefToken.wikiLeftMarker);
@@ -161,7 +221,7 @@ export const syntaxWikiLinks = (function (opts?: Partial<WikiRefsOptions>): Exte
       return consumeLeftMarker;
     }
 
-    function consumeFileName (code: Code) {
+    function consumeFileName (code: Code): State | void {
       // end
       if (code === wikirefs.CONST.MARKER.LABEL.charCodeAt(cursorLabel)) {
         if (!hasFileName) return nok(code);
@@ -176,10 +236,10 @@ export const syntaxWikiLinks = (function (opts?: Partial<WikiRefsOptions>): Exte
         return consumeRightMarker(code);
       }
       // invalid
-      if (markdownLineEnding(code) || code === codes.eof) {
+      if (markdownLineEnding(code) || (code === codes.eof)) {
         return nok(code);
       }
-      if (!wikirefs.RGX.VALID_CHARS.FILENAME.test(String.fromCharCode(<number> code))) {
+      if (!wikirefs.RGX.VALID_CHARS.FILENAME.test(String.fromCharCode(code))) {
         return nok(code);
       }
       // continue
@@ -190,7 +250,7 @@ export const syntaxWikiLinks = (function (opts?: Partial<WikiRefsOptions>): Exte
       return consumeFileName;
     }
 
-    function consumeLabelMarker (code: Code) {
+    function consumeLabelMarker (code: Code): State | void {
       // end
       if (cursorLabelMarker === wikirefs.CONST.MARKER.LABEL.length) {
         effects.exit(WikiRefToken.wikiLinkLabelMarker);
@@ -207,7 +267,7 @@ export const syntaxWikiLinks = (function (opts?: Partial<WikiRefsOptions>): Exte
       return consumeLabelMarker;
     }
 
-    function consumeLabel (code: Code) {
+    function consumeLabel (code: Code): State | void {
       // end (maybe)
       if (code === wikirefs.CONST.MARKER.CLOSE.charCodeAt(cursorRightMarker)) {
         return lookaheadRightMarker(code);
@@ -262,7 +322,7 @@ export const syntaxWikiLinks = (function (opts?: Partial<WikiRefsOptions>): Exte
     }
 
     // fin(ish)
-    function consumeRightMarker (code: Code) {
+    function consumeRightMarker (code: Code): State | void {
       // end
       if (cursorRightMarker === wikirefs.CONST.MARKER.CLOSE.length) {
         effects.exit(WikiRefToken.wikiRightMarker);
@@ -298,4 +358,4 @@ export const syntaxWikiLinks = (function (opts?: Partial<WikiRefsOptions>): Exte
       }
     }
   }
-});
+}
