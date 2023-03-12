@@ -89,7 +89,7 @@ function runFromMarkdown(contextMsg: string, tests: TestCaseMdast[]): void {
         let visited: boolean = false;
         visitNodeType(actlAst, expdNode.type as string, (actlNode: any) => {
           assert.strictEqual(actlNode.type, expdNode.type);
-          // assert.deepStrictEqual(actlNode.data, expdNode.data);
+          assert.deepStrictEqual(actlNode.data, expdNode.data);
           assert.deepStrictEqual(actlNode.children, expdNode.children);
           visited = true;
         });

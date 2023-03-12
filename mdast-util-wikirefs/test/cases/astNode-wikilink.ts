@@ -1,4 +1,3 @@
-import type { WikiLinkData } from 'micromark-extension-wikirefs/dist/index';
 import type { WikiLinkNode } from '../../src/util/types';
 
 
@@ -17,7 +16,7 @@ export function validNode(linktype: string = ''): WikiLinkNode {
         doctype: '',
         label: '',
         linktype: linktype,
-      } as WikiLinkData,
+      },
       hName: 'a',
       hProperties: {
         className: (linktype === '')
@@ -43,7 +42,7 @@ export function invalidNode(linktype: string = ''): WikiLinkNode {
         doctype: '',
         label: '',
         linktype: linktype,
-      } as WikiLinkData,
+      },
       hName: 'a',
       hProperties: {
         className: ['wiki', 'link', 'invalid'],
@@ -66,7 +65,7 @@ export function labelNode(linktype: string = ''): WikiLinkNode {
         doctype: '',
         label: 'a label',
         linktype: linktype,
-      } as WikiLinkData,
+      },
       hName: 'a',
       hProperties: {
         className: (linktype === '')

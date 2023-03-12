@@ -1,4 +1,3 @@
-import path  from 'path';
 import { merge } from 'lodash-es';
 import * as wikirefs from 'wikirefs';
 import type { CompileContext, Extension as FromMarkdownExtension } from 'mdast-util-from-markdown';

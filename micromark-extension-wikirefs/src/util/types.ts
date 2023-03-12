@@ -9,6 +9,7 @@ export interface OptCssNames {
   link: 'link',
   type: 'type',
   embed: 'embed',
+  // types
   reftype: 'reftype__',
   doctype: 'doctype__',
   // attr
@@ -74,12 +75,11 @@ export interface WikiRefsOptions {
   useCaml: boolean;
 }
 
-
 // construct data types
 // (for html and ast)
 
 export type AttrData = {
-  [key: string]: AttrDataItem[];
+  [key: string]: (AttrDataItem | WikiAttrData)[];
 }
 
 // same in remark-caml

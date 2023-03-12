@@ -1,4 +1,3 @@
-import path from 'path';
 import { merge } from 'lodash-es';
 import * as wikirefs from 'wikirefs';
 import type { CompileContext, Extension as FromMarkdownExtension } from 'mdast-util-from-markdown';
@@ -65,8 +64,8 @@ export function fromMarkdownWikiAttrs(opts?: Partial<WikiRefsOptions>): FromMark
     // is accessible via 'this.stack' (see below)
     this.enter(startAttrBoxNode as AttrBoxNode as unknown as Node, token);
     // current key
-    const curKey = this.getData('curKey');
-    if (!curKey) this.setData('curKey', '');
+    const curKey: string | undefined = this.getData('curKey');
+    if (curKey === undefined) { this.setData('curKey', ''); }
   }
 
   function exitWikiAttrKey (this: CompileContext, token: Token): void {
@@ -107,8 +106,8 @@ export function fromMarkdownWikiAttrs(opts?: Partial<WikiRefsOptions>): FromMark
       baseUrl: baseUrl,
     };
     if (current.data && current.data.items) {
-      const curKey: string = this.getData('curKey') as string;
-      current.data.items[curKey].push(item);
+      const curKey: string | undefined = this.getData('curKey');
+      if (curKey !== undefined) { current.data.items[curKey].push(item); }
     }
   }
 
@@ -161,7 +160,7 @@ export function fromMarkdownWikiAttrs(opts?: Partial<WikiRefsOptions>): FromMark
 
         // key / attrtype
         const attrType: string | undefined = attrtype ? attrtype : undefined;
-        (attrbox.children[1].children as (AttrKeyNode | AttrValNode)[]).push({
+        (attrbox.children[1] as AttrBoxListNode).children.push({
           type: 'attr-key',
           children: [{
             type: 'text',
@@ -176,7 +175,7 @@ export function fromMarkdownWikiAttrs(opts?: Partial<WikiRefsOptions>): FromMark
 
           // invalid
           if (!wikiItem.htmlHref) {
-            (attrbox.children[1].children as (AttrKeyNode | AttrValNode)[]).push({
+            (attrbox.children[1] as AttrBoxListNode).children.push({
               type: 'attr-val',
               children: [
                 {
@@ -201,7 +200,7 @@ export function fromMarkdownWikiAttrs(opts?: Partial<WikiRefsOptions>): FromMark
             } as AttrValNode);
           // valid
           } else {
-            (attrbox.children[1].children as (AttrKeyNode | AttrValNode)[]).push({
+            (attrbox.children[1] as AttrBoxListNode).children.push({
               type: 'attr-val',
               children: [
                 {

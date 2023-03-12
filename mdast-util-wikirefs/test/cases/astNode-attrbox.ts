@@ -1,11 +1,6 @@
-import type { WikiAttrData } from 'micromark-extension-wikirefs';
 import type {
   AttrBoxNode,
-  AttrBoxTitleNode,
   AttrBoxListNode,
-  AttrKeyNode,
-  AttrValNode,
-  WikiAttrNode,
 } from '../../src/util/types';
 
 
@@ -21,7 +16,7 @@ export const attrboxNodeSingle: AttrBoxNode = {
           htmlHref: '/tests/fixtures/fname-a',
           htmlText: 'title a',
           baseUrl: '',
-        } as WikiAttrData
+        },
       ],
     },
     hName: 'aside',
@@ -42,7 +37,7 @@ export const attrboxNodeSingle: AttrBoxNode = {
         type: 'text',
         value: 'Attributes',
       }],
-    } as AttrBoxTitleNode,
+    },
     {
       type: 'attrbox-list',
       data: { hName: 'dl' },
@@ -54,7 +49,7 @@ export const attrboxNodeSingle: AttrBoxNode = {
             type: 'text',
             value: 'attrtype',
           }],
-        } as AttrKeyNode,
+        },
         {
           type: 'attr-val',
           data: { hName: 'dd' },
@@ -73,9 +68,9 @@ export const attrboxNodeSingle: AttrBoxNode = {
                   href: '/tests/fixtures/fname-a',
                 },
               }
-            } as WikiAttrNode,
+            },
           ],
-        } as AttrValNode,
+        },
       ],
     } as AttrBoxListNode,
   ],
@@ -93,7 +88,7 @@ export const attrboxNodeList: AttrBoxNode = {
           htmlHref: '/tests/fixtures/fname-a',
           htmlText: 'title a',
           baseUrl: '',
-        } as WikiAttrData,
+        },
         {
           type: 'wiki',
           doctype: '',
@@ -101,7 +96,7 @@ export const attrboxNodeList: AttrBoxNode = {
           htmlHref: '/tests/fixtures/fname-b',
           htmlText: 'title b',
           baseUrl: '',
-        } as WikiAttrData,
+        },
         {
           type: 'wiki',
           doctype: '',
@@ -109,7 +104,7 @@ export const attrboxNodeList: AttrBoxNode = {
           htmlHref: '/tests/fixtures/fname-c',
           htmlText: 'title c',
           baseUrl: '',
-        } as WikiAttrData,
+        },
       ],
     },
     hName: 'aside',
@@ -130,7 +125,7 @@ export const attrboxNodeList: AttrBoxNode = {
         type: 'text',
         value: 'Attributes',
       }]
-    } as AttrBoxTitleNode,
+    },
     {
       type: 'attrbox-list',
       data: { hName: 'dl' },
@@ -142,7 +137,7 @@ export const attrboxNodeList: AttrBoxNode = {
             type: 'text',
             value: 'attrtype',
           }],
-        } as AttrKeyNode,
+        },
         {
           type: 'attr-val',
           data: { hName: 'dd' },
@@ -161,9 +156,9 @@ export const attrboxNodeList: AttrBoxNode = {
                   href: '/tests/fixtures/fname-a',
                 },
               }
-            } as WikiAttrNode
+            }
           ],
-        } as AttrValNode,
+        },
         {
           type: 'attr-val',
           data: { hName: 'dd' },
@@ -182,9 +177,9 @@ export const attrboxNodeList: AttrBoxNode = {
                 type: 'text',
                 value: 'title b',
               }],
-            } as WikiAttrNode
+            }
           ],
-        } as AttrValNode,
+        },
         {
           type: 'attr-val',
           data: { hName: 'dd' },
@@ -203,9 +198,9 @@ export const attrboxNodeList: AttrBoxNode = {
                 type: 'text',
                 value: 'title c',
               }],
-            } as WikiAttrNode
+            }
           ],
-        } as AttrValNode,
+        },
       ],
     } as AttrBoxListNode,
   ]

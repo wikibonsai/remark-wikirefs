@@ -86,7 +86,7 @@ export function htmlWikiAttrs(opts?: Partial<WikiRefsOptions>): HtmlExtension {
       htmlText: htmlText ? htmlText : '',
       baseUrl: baseUrl,
     };
-    const curKey: string = this.getData('curKey')  as unknown as string;
+    const curKey: string = this.getData('curKey') as unknown as string;
     current[curKey].push(item);
     // from: https://github.com/micromark/micromark-extension-gfm-footnote/blob/main/dev/lib/html.js#L86
     // “Hack” to prevent a line ending from showing up if we’re in a definition in

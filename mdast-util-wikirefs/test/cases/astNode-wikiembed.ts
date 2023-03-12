@@ -1,15 +1,4 @@
-import type { WikiEmbedData } from 'micromark-extension-wikirefs';
-import type {
-  EmbedMediaAudioNode,
-  EmbedMediaImageNode,
-  EmbedMediaSpanNode,
-  EmbedMediaVideoNode,
-  EmbedMkdnTitleNode,
-  EmbedMkdnLinkNode,
-  EmbedMkdnContentNode,
-  EmbedMkdnWrapperNode,
-  WikiEmbedNode,
-} from '../../src/util/types';
+import type { WikiEmbedNode } from '../../src/util/types';
 
 
 // mkdn
@@ -20,7 +9,7 @@ export const embedMarkDownNodeSingle: WikiEmbedNode = {
     item: {
       doctype: '',
       filename: 'embed-doc',
-    } as WikiEmbedData,
+    },
     hName: 'p',
   },
   children: [{
@@ -55,7 +44,7 @@ export const embedMarkDownNodeSingle: WikiEmbedNode = {
             value: 'embedded document',
           }]
         }],
-      } as EmbedMkdnTitleNode,
+      },
       {
         type: 'embed-mkdn-link',
         data: {
@@ -84,7 +73,7 @@ export const embedMarkDownNodeSingle: WikiEmbedNode = {
             }
           }],
         }],
-      } as EmbedMkdnLinkNode,
+      },
       {
         type: 'embed-mkdn-content',
         data: {
@@ -115,9 +104,9 @@ export const embedMarkDownNodeSingle: WikiEmbedNode = {
             }]
           }],
         }],
-      } as EmbedMkdnContentNode,
+      },
     ],
-  } as EmbedMkdnWrapperNode],
+  }],
 };
 
 export const embedInvalidMarkDownNodeSingle: WikiEmbedNode = {
@@ -126,7 +115,7 @@ export const embedInvalidMarkDownNodeSingle: WikiEmbedNode = {
     item: {
       doctype: '',
       filename: 'invalid.abc',
-    } as WikiEmbedData,
+    },
     hName: 'p',
   },
   children: [{
@@ -161,7 +150,7 @@ export const embedInvalidMarkDownNodeSingle: WikiEmbedNode = {
             value: 'invalid.abc',
           }]
         }],
-      } as EmbedMkdnTitleNode,
+      },
       {
         type: 'embed-mkdn-link',
         data: {
@@ -190,7 +179,7 @@ export const embedInvalidMarkDownNodeSingle: WikiEmbedNode = {
             },
           }],
         }],
-      } as EmbedMkdnLinkNode,
+      },
       {
         type: 'embed-mkdn-content',
         data: {
@@ -203,9 +192,9 @@ export const embedInvalidMarkDownNodeSingle: WikiEmbedNode = {
           type: 'text',
           value: 'Error: Content not found for \'invalid.abc\'',
         }],
-      } as EmbedMkdnContentNode,
+      },
     ],
-  } as EmbedMkdnWrapperNode],
+  }],
 };
 
 // media
@@ -216,7 +205,7 @@ export const embedMediaAudioNodeSingle: WikiEmbedNode = {
     item: {
       doctype: '',
       filename: 'audio.mp3',
-    } as WikiEmbedData,
+    },
     hName: 'p',
   },
   children: [{
@@ -240,8 +229,8 @@ export const embedMediaAudioNodeSingle: WikiEmbedNode = {
           type: 'audio/mp3',
         }
       }
-    } as EmbedMediaAudioNode],
-  } as EmbedMediaSpanNode],
+    }],
+  }],
 };
 
 export const embedMediaImageNodeSingle: WikiEmbedNode = {
@@ -250,7 +239,7 @@ export const embedMediaImageNodeSingle: WikiEmbedNode = {
     item: {
       doctype: '',
       filename: 'image.png',
-    } as WikiEmbedData,
+    },
     hName: 'p',
   },
   children: [{
@@ -272,8 +261,8 @@ export const embedMediaImageNodeSingle: WikiEmbedNode = {
           src: '/tests/fixtures/image.png',
         }
       }
-    } as EmbedMediaImageNode]
-  } as EmbedMediaSpanNode],
+    }]
+  }],
 };
 
 export const embedMediaVideoNodeSingle: WikiEmbedNode = {
@@ -282,7 +271,7 @@ export const embedMediaVideoNodeSingle: WikiEmbedNode = {
     item: {
       doctype: '',
       filename: 'video.mp4',
-    } as WikiEmbedData,
+    },
     hName: 'p',
   },
   children: [{
@@ -306,8 +295,8 @@ export const embedMediaVideoNodeSingle: WikiEmbedNode = {
           type: 'video/mp4',
         }
       }
-    } as EmbedMediaVideoNode],
-  } as EmbedMediaSpanNode],
+    }],
+  }],
 };
 
 export const embedNode = {

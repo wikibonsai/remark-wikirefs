@@ -1,4 +1,4 @@
-import assert from 'node:assert';
+import assert from 'node:assert/strict';
 
 import { merge } from 'lodash-es';
 
@@ -87,8 +87,8 @@ function runMkdnToMdast(contextMsg: string, tests: TestCaseMdast[]): void {
         // assert
         visitNodeType(actlAst, expdNode.type as string, (actlNode: any) => {
           assert.strictEqual(actlNode.type, expdNode.type);
-          assert.deepEqual(actlNode.children, expdNode.children);
           assert.deepEqual(actlNode.data, expdNode.data);
+          assert.deepEqual(actlNode.children, expdNode.children);
           visited = true;
         });
         assert.strictEqual(visited, true);

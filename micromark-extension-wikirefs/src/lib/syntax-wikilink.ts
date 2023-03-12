@@ -2,8 +2,6 @@ import { merge } from 'lodash-es';
 import type { ConstructRecord, Effects, State } from 'micromark/dev/lib/create-tokenizer';
 import type { Tokenizer } from 'micromark/dev/lib/initialize/document';
 import type { Code, Extension } from 'micromark-util-types';
-import { constants } from 'micromark-util-symbol/constants.js';
-import { types } from 'micromark-util-symbol/types.js';
 import { codes } from 'micromark-util-symbol/codes.js';
 import {
   markdownLineEnding,
