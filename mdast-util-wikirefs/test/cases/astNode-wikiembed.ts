@@ -9,6 +9,7 @@ export const embedMarkDownNodeSingle: WikiEmbedNode = {
     item: {
       doctype: '',
       filename: 'embed-doc',
+      media: 'markdown',
     },
     hName: 'p',
   },
@@ -115,6 +116,7 @@ export const embedInvalidMarkDownNodeSingle: WikiEmbedNode = {
     item: {
       doctype: '',
       filename: 'invalid.abc',
+      media: 'markdown', // markdown is the catch-all
     },
     hName: 'p',
   },
@@ -205,6 +207,7 @@ export const embedMediaAudioNodeSingle: WikiEmbedNode = {
     item: {
       doctype: '',
       filename: 'audio.mp3',
+      media: 'audio',
     },
     hName: 'p',
   },
@@ -239,6 +242,7 @@ export const embedMediaImageNodeSingle: WikiEmbedNode = {
     item: {
       doctype: '',
       filename: 'image.png',
+      media: 'image',
     },
     hName: 'p',
   },
@@ -271,6 +275,7 @@ export const embedMediaVideoNodeSingle: WikiEmbedNode = {
     item: {
       doctype: '',
       filename: 'video.mp4',
+      media: 'video',
     },
     hName: 'p',
   },

@@ -35,10 +35,6 @@ export function htmlWikiEmbeds(opts: Partial<WikiRefsOptions>): HtmlExtension {
     const stack: WikiEmbedData[] = this.getData('WikiEmbedStack') as unknown as WikiEmbedData[];
     const current: WikiEmbedData = top(stack);
     current.filename = filename;
-    if (fullOpts.resolveDocType) {
-      const resolvedDocType: string | undefined = fullOpts.resolveDocType(filename);
-      current.doctype = resolvedDocType ? resolvedDocType : '';
-    }
   }
 
   // an element like this should be built:
@@ -102,6 +98,7 @@ export function htmlWikiEmbeds(opts: Partial<WikiRefsOptions>): HtmlExtension {
     const htmlHref: string | undefined = fullOpts.resolveHtmlHref(filename);
     const htmlText: string             = (fullOpts.resolveHtmlText(filename) !== undefined) ? fullOpts.resolveHtmlText(filename) : filename;
     const doctype : string             = (fullOpts.resolveDocType && (fullOpts.resolveDocType(filename) !== undefined))          ? fullOpts.resolveDocType(filename)  : '';
+    wikiEmbed.doctype = doctype;
     ////
     // media
     // open : wikiembed
@@ -110,6 +107,7 @@ export function htmlWikiEmbeds(opts: Partial<WikiRefsOptions>): HtmlExtension {
       // inner
       // audio
       if (wikirefs.CONST.EXTS.AUD.has(mediaExt)) {
+        wikiEmbed.media = wikirefs.CONST.MEDIA.AUD;
         this.tag(`<span class="${fullOpts.cssNames.embedMedia}" src="${fullOpts.baseUrl + filenameSlug}" alt="${filenameSlug}">`);
         if (!htmlHref) { 
           this.tag(`<audio class="${fullOpts.cssNames.embedAudio}" controls type="audio/${mime}"></audio>`);
@@ -118,6 +116,7 @@ export function htmlWikiEmbeds(opts: Partial<WikiRefsOptions>): HtmlExtension {
         }
       // image
       } else if (wikirefs.CONST.EXTS.IMG.has(mediaExt)) {
+        wikiEmbed.media = wikirefs.CONST.MEDIA.IMG;
         this.tag(`<span class="${fullOpts.cssNames.embedMedia}" src="${fullOpts.baseUrl + filenameSlug}" alt="${filenameSlug}">`);
         if (!htmlHref) {
           this.tag(`<img class="${fullOpts.cssNames.embedImage}">`);
@@ -126,6 +125,7 @@ export function htmlWikiEmbeds(opts: Partial<WikiRefsOptions>): HtmlExtension {
         }
       // video
       } else if (wikirefs.CONST.EXTS.VID.has(mediaExt)) {
+        wikiEmbed.media = wikirefs.CONST.MEDIA.VID;
         this.tag(`<span class="${fullOpts.cssNames.embedMedia}" src="${fullOpts.baseUrl + filenameSlug}" alt="${filenameSlug}">`);
         if (!htmlHref) {
           this.tag(`<video class="${fullOpts.cssNames.embedVideo}" controls type="video/${mime}"></video>`);
@@ -143,6 +143,7 @@ export function htmlWikiEmbeds(opts: Partial<WikiRefsOptions>): HtmlExtension {
     ////
     // markdown
     } else {
+      wikiEmbed.media = wikirefs.CONST.MEDIA.MD;
       // open : wrapper
       this.tag(`<div class="${fullOpts.cssNames.embedWrapper}">`);
 

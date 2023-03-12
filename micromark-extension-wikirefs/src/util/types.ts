@@ -109,5 +109,5 @@ export type WikiLinkData = {
 export type WikiEmbedData = {
   doctype: string;
   filename: string;
-  // media: string;
+  media: string;
 }

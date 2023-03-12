@@ -115,6 +115,7 @@ export function fromMarkdownWikiEmbeds(opts?: Partial<WikiRefsOptions>): FromMar
     const htmlHref: string | undefined = fullOpts.resolveHtmlHref(filename);
     const htmlText: string | undefined = fullOpts.resolveHtmlText(filename) ? fullOpts.resolveHtmlText(filename) : filename;
     const doctype : string | undefined = fullOpts.resolveDocType            ? fullOpts.resolveDocType(filename)  : '';
+    wikiEmbed.data.item.doctype = doctype;
     ////
     // media
     if (wikirefs.isMedia(filename)) {
@@ -134,6 +135,7 @@ export function fromMarkdownWikiEmbeds(opts?: Partial<WikiRefsOptions>): FromMar
       });
       // audio
       if (wikirefs.CONST.EXTS.AUD.has(mediaExt)) {
+        wikiEmbed.data.item.media = wikirefs.CONST.MEDIA.AUD;
         wikiEmbed.children[0].children.push({
           type: 'embed-media-audio',
           data: {
@@ -148,6 +150,7 @@ export function fromMarkdownWikiEmbeds(opts?: Partial<WikiRefsOptions>): FromMar
         });
       // image
       } else if (wikirefs.CONST.EXTS.IMG.has(mediaExt)) {
+        wikiEmbed.data.item.media = wikirefs.CONST.MEDIA.IMG;
         wikiEmbed.children[0].children.push({
           type: 'embed-media-image',
           data: {
@@ -160,6 +163,7 @@ export function fromMarkdownWikiEmbeds(opts?: Partial<WikiRefsOptions>): FromMar
         });
       // video
       } else if (wikirefs.CONST.EXTS.VID.has(mediaExt)) {
+        wikiEmbed.data.item.media = wikirefs.CONST.MEDIA.VID;
         wikiEmbed.children[0].children.push({
           type: 'embed-media-video',
           data: {
@@ -181,12 +185,13 @@ export function fromMarkdownWikiEmbeds(opts?: Partial<WikiRefsOptions>): FromMar
           value: 'media error',
         });
       }
-      if (htmlHref) {
+      if (htmlHref && (wikiEmbed.children[0].children[0].type !== 'text')) {
         wikiEmbed.children[0].children[0].data.hProperties.src = fullOpts.baseUrl + htmlHref;
       }
     ////
     // markdown
     } else {
+      wikiEmbed.data.item.media = wikirefs.CONST.MEDIA.MD;
       // embed mkdn wrapper
       wikiEmbed.children.push({
         type: 'embed-mkdn-wrapper',
