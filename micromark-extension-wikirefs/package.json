@@ -39,7 +39,7 @@
     "micromark-util-symbol": "^1.0.1",
     "micromark-util-types": "^1.0.2",
     "uvu": "^0.5.6",
-    "wikirefs": "^0.0.1"
+    "wikirefs": "^0.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.19.3",
