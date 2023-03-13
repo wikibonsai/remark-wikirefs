@@ -31,8 +31,8 @@
     "dev:fix-links": "yarn link micromark-extension-wikirefs mdast-util-wikirefs"
   },
   "dependencies": {
-    "mdast-util-wikirefs": "^0.0.2-md",
-    "micromark-extension-wikirefs": "^0.0.2-mm"
+    "mdast-util-wikirefs": "^0.0.3-md",
+    "micromark-extension-wikirefs": "^0.0.3-mm"
   },
   "devDependencies": {
     "@babel/core": "^7.19.3",
