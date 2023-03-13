@@ -2684,10 +2684,10 @@ micromark-core-commonmark@^1.0.1:
     micromark-util-types "^1.0.1"
     uvu "^0.5.0"
 
-micromark-extension-wikirefs@^0.0.2-mm:
-  version "0.0.2-mm"
-  resolved "https://registry.yarnpkg.com/micromark-extension-wikirefs/-/micromark-extension-wikirefs-0.0.2-mm.tgz#17f7d41548fcfbd61c7583eb869b6be2a9da4e02"
-  integrity sha512-qxsBIAWlZfBfezUYRWk7pevv7BKlT3IRLFUv/oOIn+QoSnE2bAtDiC4VzLUG0DsS31k+mUn8oTliOq74zf4yvg==
+micromark-extension-wikirefs@^0.0.3-mm:
+  version "0.0.3-mm"
+  resolved "https://registry.yarnpkg.com/micromark-extension-wikirefs/-/micromark-extension-wikirefs-0.0.3-mm.tgz#6061252a2c906a5809e83a3855bee027c0114751"
+  integrity sha512-Vfint2QgMRjus2Jpk1v+pecicpO/bffJMF/LhjO0z9lil62SuoWkCv2bT/hKFSBbMDJ4m6i6Q0fn/1l+eCjpAw==
   dependencies:
     lodash-es "^4.17.21"
     micromark-factory-space "^1.0.0"
@@ -2697,7 +2697,7 @@ micromark-extension-wikirefs@^0.0.2-mm:
     micromark-util-symbol "^1.0.1"
     micromark-util-types "^1.0.2"
     uvu "^0.5.6"
-    wikirefs "^0.0.1"
+    wikirefs "^0.0.2"
 
 micromark-factory-destination@^1.0.0:
   version "1.0.0"
@@ -3685,10 +3685,10 @@ wikirefs-spec@^0.0.1:
   resolved "https://registry.yarnpkg.com/wikirefs-spec/-/wikirefs-spec-0.0.1.tgz#f4dfc408405653b0493a6a4f952df293837b6a4e"
   integrity sha512-zgNXcGrkqANzsV7yhmpNlOdb4gZB6yPJE5OCUhMmGaDRlL6nyZiduUssyv9LbEhAdvYj0XLyEPeop7LGf+CAbA==
 
-wikirefs@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/wikirefs/-/wikirefs-0.0.1.tgz#15914b9ecc986c17ed0c6ac0ce71c18359b207d8"
-  integrity sha512-O46dSbuZQdDi3SE9pB88UhwqtGAvbV0+j7zD95158xul9YceCrEX/dWsidTzfoW0oJkI7zFCkCOWE3YzUHGagQ==
+wikirefs@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/wikirefs/-/wikirefs-0.0.2.tgz#eb8bdb3506f6fe75f683198b9343e0228a5ed716"
+  integrity sha512-G57eZB6VcYmm8umCOYIkmfzX497EEbhtlPwP/qLI+vYYIp4POIlkA67VE+PrYMsVVf5YxQ+QukElAK9hE5VROQ==
   dependencies:
     escape-mkdn "^0.0.3"
 
