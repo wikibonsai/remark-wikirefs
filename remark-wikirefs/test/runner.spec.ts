@@ -173,7 +173,6 @@ function runMdastToMkdn(contextMsg: string, tests: TestCaseMdast[]): void {
         //            context, which can affect symbol escaping
         const paragraph: Uni.Parent = {
           type: 'paragraph',
-          // @ts-expect-error: Index signature for type 'string' is missing in type 'AttrBoxNode'.ts(2322) (this error comes and goes...)
           children: [node as (AttrBoxNode | WikiLinkNode)],
         };
         // for (text) 'WikiLink' test cases, but not for 'WikiEmbed' cases
