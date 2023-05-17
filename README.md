@@ -1,6 +1,6 @@
 # `remark-wikirefs`
 
-![[A WikiBonsai Project](https://github.com/wikibonsai/wikibonsai)](https://img.shields.io/badge/%F0%9F%8E%8B-A%20WikiBonsai%20Project-brightgreen)
+[![A WikiBonsai Project](https://img.shields.io/badge/%F0%9F%8E%8B-A%20WikiBonsai%20Project-brightgreen)](https://github.com/wikibonsai/wikibonsai)
 
 Following [convention](https://github.com/micromark/micromark/discussions/56), this repository contains **three separate `npm` packages** related to support [wikirefs](https://github.com/wikibonsai/wikirefs) (including [[wikilinks]]) for the `remark` Markdown parser.
 
