@@ -581,3 +581,11 @@ resolveEmbedContent: (fname: string) => {
 #### `useCaml`
 
 A boolean value to notify the `remark-wikirefs` plugins that `remark-caml` is being used and that the attrbox should be rendered there instead of here.
+
+### Other Remark Plugins
+
+- [remark-obsidian](https://github.com/johackim/remark-obsidian)
+- [remark-obsidian-link](https://github.com/aegatlin/remark-obsidian-link)
+- [remark-wiki-link](https://github.com/landakram/remark-wiki-link)
+- [remark-wiki-link-plus](https://github.com/flowershow/remark-wiki-link-plus)
+- [remark-wiki-links](https://github.com/c1200/remark-wikilinks)
