@@ -106,17 +106,15 @@ function runToMarkdown(contextMsg: string, tests: TestCaseMdast[]): void {
       it(desc, () => {
         // test vars
         // merge suite options with case options
-        const opts: Partial<WikiRefsOptions> = merge(mockOpts, test.opts);
-        const node: Partial<AttrBoxNode | WikiLinkNode> = test.node as (AttrBoxNode | WikiLinkNode);
+        const opts: WikiRefsOptions = merge(mockOpts, test.opts);
+        const node: AttrBoxNode | WikiLinkNode = test.node as (AttrBoxNode | WikiLinkNode);
         const expdMkdn: string = test.mkdn;
         // setup
         // build ast: ast nodes will normally appear in paragraph
         //            context, which can affect symbol escaping
         const paragraph: Uni.Parent = {
           type: 'paragraph',
-          children: [
-            node as (AttrBoxNode | WikiLinkNode),
-          ],
+          children: [node as (AttrBoxNode | WikiLinkNode)],
         };
         // for (text) 'WikiLink' test cases, but not for 'WikiEmbed' cases
         if (expdMkdn.includes('.') && !expdMkdn.includes('!')) {
