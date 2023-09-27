@@ -13,25 +13,16 @@ export function htmlWikiAttrs(opts?: Partial<WikiRefsOptions>): HtmlExtension {
   const fullOpts: DefaultsWikiRefs & DefaultsWikiAttrs = merge(defaultsWikiRefs(), defaultsWikiAttrs(), opts);
 
   // note: enter/exit keys should match a token name (see 'cross-module.spec.ts')
-  if (fullOpts.useCaml) {
-    return {
-      exit: {
-        wikiAttrKey: exitWikiAttrKey,
-        wikiAttrVal: exitWikiAttrVal,
-      },
-    };
-  } else {
-    return {
-      enter: {
-        wikiAttrBox: enterWikiAttrBox,
-      },
-      exit: {
-        wikiAttrKey: exitWikiAttrKey,
-        wikiAttrVal: exitWikiAttrVal,
-        wikiAttrBox: exitWikiAttrBox,
-      },
-    };
-  }
+  return {
+    enter: {
+      wikiAttrBox: enterWikiAttrBox,
+    },
+    exit: {
+      wikiAttrKey: exitWikiAttrKey,
+      wikiAttrVal: exitWikiAttrVal,
+      wikiAttrBox: exitWikiAttrBox,
+    },
+  };
 
   function enterWikiAttrBox (this: CompileContext): void {
     // attrbox

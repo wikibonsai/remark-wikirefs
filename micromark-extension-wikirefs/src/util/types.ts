@@ -71,8 +71,6 @@ export interface WikiRefsOptions {
   attrs: Partial<OptAttr | OptAttrToMkdn>;
   links: OptLink;
   embeds: OptEmbed;
-  // caml
-  useCaml: boolean;
 }
 
 // construct data types

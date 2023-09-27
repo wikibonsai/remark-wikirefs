@@ -94,7 +94,6 @@ export interface DefaultsWikiAttrs {
       prefixed: boolean;
     }
   },
-  useCaml: boolean;
 }
 
 export function defaultsWikiAttrs(): DefaultsWikiAttrs {
@@ -118,7 +117,6 @@ export function defaultsWikiAttrs(): DefaultsWikiAttrs {
         prefixed: true,
       }
     },
-    useCaml: false,
   };
 }
 

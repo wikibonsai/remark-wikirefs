@@ -29,25 +29,16 @@ export function fromMarkdownWikiAttrs(opts?: Partial<WikiRefsOptions>): FromMark
   const fullOpts: DefaultsWikiRefs & DefaultsWikiAttrs = merge(defaultsWikiRefs(), defaultsWikiAttrs(), opts);
 
   // note: enter/exit keys should match a token name
-  if (fullOpts.useCaml) {
-    return {
-      exit: {
-        wikiAttrKey: exitWikiAttrKey,
-        wikiAttrVal: exitWikiAttrVal,
-      },
-    } as FromMarkdownExtension;
-  } else {
-    return {
-      enter: {
-        wikiAttrBox: enterWikiAttrBox,
-      },
-      exit: {
-        wikiAttrKey: exitWikiAttrKey,
-        wikiAttrVal: exitWikiAttrVal,
-        wikiAttrBox: exitWikiAttrBox,
-      },
-    } as FromMarkdownExtension;
-  }
+  return {
+    enter: {
+      wikiAttrBox: enterWikiAttrBox,
+    },
+    exit: {
+      wikiAttrKey: exitWikiAttrKey,
+      wikiAttrVal: exitWikiAttrVal,
+      wikiAttrBox: exitWikiAttrBox,
+    },
+  } as FromMarkdownExtension;
 
   function enterWikiAttrBox (this: CompileContext, token: Token): void {
     const startAttrBoxNode: AttrBoxNode = {

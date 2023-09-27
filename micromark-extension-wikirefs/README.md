@@ -199,7 +199,6 @@ let syntaxOpts = {
     title: 'Embed Content',
     errorContent: 'Error: Content not found for ',
   },
-  useCaml: false,
 };
 ```
 
@@ -256,7 +255,6 @@ let htmlOpts = {
       title: 'Embed Content',
       errorContent: 'Error: Content not found for ',
     },
-    useCaml: false,
   };
 ```
 

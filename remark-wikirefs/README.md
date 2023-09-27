@@ -454,7 +454,6 @@ let remarkOpts = {
       title: 'Embed Content',
       errorContent: 'Error: Content not found for ',
     },
-    useCaml: false,
   };
 ```
 
@@ -577,10 +576,6 @@ resolveEmbedContent: (fname: string) => {
   };
 },
 ```
-
-#### `useCaml`
-
-A boolean value to notify the `remark-wikirefs` plugins that `remark-caml` is being used and that the attrbox should be rendered there instead of here.
 
 ### Other Remark Plugins
 

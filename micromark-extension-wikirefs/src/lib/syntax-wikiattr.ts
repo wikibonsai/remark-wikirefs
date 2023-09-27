@@ -25,14 +25,14 @@ import {
 
 
 export function syntaxWikiAttrs(opts?: Partial<WikiRefsOptions>): Extension {
-  // default opts
-  const defaults = {
-    attrs: {
-      title: 'Attributes',
-    } as OptAttr,
-    useCaml: false,
-  };
-  const fullOpts = merge(defaults, opts);
+  // todo: delete
+  // // default opts
+  // const defaults = {
+  //   attrs: {
+  //     title: 'Attributes',
+  //   } as OptAttr,
+  // };
+  // const fullOpts = merge(defaults, opts);
 
   const flow: ConstructRecord = {} as ConstructRecord;
   /* eslint-disable indent */
@@ -44,24 +44,14 @@ export function syntaxWikiAttrs(opts?: Partial<WikiRefsOptions>): Extension {
 
   for (const code of hooks) {
     if ((code !== null)) {
-      // * if 'useCaml' is set to 'true', (if micromark-caml is installed), 
-      // don't use local resolve function -- caml will handle it.
-      if (!fullOpts.useCaml) {
-        flow[code] = {
-          name: 'wikiattr',
-          // from: https://github.com/micromark/micromark/blob/main/packages/micromark-util-types/index.js#L277
-          concrete: true,
-          tokenize: tokenizeWikiAttrs as Tokenizer,
-          resolveAll: resolveWikiAttrs as Resolver,
-        };
-      } else {
-        flow[code] = {
-          name: 'wikiattr',
-          // from: https://github.com/micromark/micromark/blob/main/packages/micromark-util-types/index.js#L277
-          concrete: true,
-          tokenize: tokenizeWikiAttrs as Tokenizer,
-        };
-      }
+      flow[code] = {
+        name: 'wikiattr',
+        // from: https://github.com/micromark/micromark/blob/main/packages/micromark-util-types/index.js#L277
+        concrete: true,
+        tokenize: tokenizeWikiAttrs as Tokenizer,
+        resolveAll: resolveWikiAttrs as Resolver,
+        add: 'before',
+      };
     }
   }
 
@@ -78,6 +68,18 @@ export function syntaxWikiAttrs(opts?: Partial<WikiRefsOptions>): Extension {
     const attrEvents: number[] = [];
     // markers, newlines, etc. are completely removed
     const attrToss: number[] = [];
+
+    ////
+    // caml resolver interop
+    ////
+    // check if events includes a caml token and return if it does -- use caml resolver instead
+    while (++index < events.length) {
+      if (events[index][1].type.indexOf('caml') === 0) {
+        return events;
+      }
+    }
+    // reset index for actual run-through
+    index = -1;
 
     // util:
     // push, splice, sliceSerialize
@@ -152,11 +154,11 @@ export function syntaxWikiAttrs(opts?: Partial<WikiRefsOptions>): Extension {
     );
     assert(
       !((attrEvents.length > 0) && (attrEnterEvents.length === 0)),
-      'wikiattrs enter token expected -- if you are using remark-caml, set \'useCaml\' option to \'true\'',
+      'wikiattrs enter token expected -- if you are using remark-caml, there might be a conflict',
     );
     assert(
       !((attrEvents.length > 0) && (attrExitEvents.length === 0)),
-      'wikiattrs exit token expected -- if you are using remark-caml, set \'useCaml\' option to \'true\'',
+      'wikiattrs exit token expected -- if you are using remark-caml, there might be a conflict',
     );
 
     // build attrbox //
