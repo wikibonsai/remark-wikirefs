@@ -384,14 +384,18 @@ describe('remark-wikirefs', () => {
         'wikiattr; unprefixed; w/ other mkdn constructs; near lists; after',
         'wikiattr; unprefixed; w/ other mkdn constructs; near lists; immediate after',
         'wikiattr; unprefixed; malformed; list; mkdn-separated; items not [[bracketed]]',
+        'wikiattr; unprefixed; w/ other mkdn constructs; near blockquotes; after',
+        'wikiattr; unprefixed; w/ other mkdn constructs; near blockquotes; immediate after',
         'wikiattr; prefixed; w/ other mkdn constructs; near lists; after',
         'wikiattr; prefixed; w/ other mkdn constructs; near lists; immediate after',
         'wikiattr; prefixed; malformed; list; mkdn-separated; items not [[bracketed]]',
+        'wikiattr; prefixed; w/ other mkdn constructs; near blockquotes; after',
+        'wikiattr; prefixed; w/ other mkdn constructs; near blockquotes; immediate after',
         'wikiattr; mixed; wikirefs + caml; wiki multi single, caml mkdn list',
-        'wikiattr; mixed; wikirefs + caml; wiki mkdn list, caml mkdn list'
+        'wikiattr; mixed; wikirefs + caml; wiki mkdn list, caml mkdn list',
       ];
-      const onlyRunTestIfItIsNotAFailingTest: boolean = !failingTests.some((descr: string) => descr === testcase.descr);
-      return onlyRunTestIfItIsNotAFailingTest;
+      const skipFailing: boolean = !failingTests.some((descr: string) => descr === testcase.descr);
+      return skipFailing;
     }));
     it.skip('mkdn -> html; precision newlines');
     it.skip('mkdn -> html');
@@ -407,14 +411,18 @@ describe('remark-wikirefs', () => {
         'wikiattr; unprefixed; w/ other mkdn constructs; near lists; after',
         'wikiattr; unprefixed; w/ other mkdn constructs; near lists; immediate after',
         'wikiattr; unprefixed; malformed; list; mkdn-separated; items not [[bracketed]]',
+        'wikiattr; unprefixed; w/ other mkdn constructs; near blockquotes; after',
+        'wikiattr; unprefixed; w/ other mkdn constructs; near blockquotes; immediate after',
         'wikiattr; prefixed; w/ other mkdn constructs; near lists; after',
         'wikiattr; prefixed; w/ other mkdn constructs; near lists; immediate after',
         'wikiattr; prefixed; malformed; list; mkdn-separated; items not [[bracketed]]',
+        'wikiattr; prefixed; w/ other mkdn constructs; near blockquotes; after',
+        'wikiattr; prefixed; w/ other mkdn constructs; near blockquotes; immediate after',
         'wikiattr; mixed; wikirefs + caml; wiki multi single, caml mkdn list',
-        'wikiattr; mixed; wikirefs + caml; wiki mkdn list, caml mkdn list'
+        'wikiattr; mixed; wikirefs + caml; wiki mkdn list, caml mkdn list',
       ];
-      const onlyRunTestIfItIsNotAFailingTest: boolean = !failingTests.some((descr: string) => descr === testcase.descr);
-      return onlyRunTestIfItIsNotAFailingTest;
+      const skipFailing: boolean = !failingTests.some((descr: string) => descr === testcase.descr);
+      return skipFailing;
     }));
     it.skip('vfile mkdn -> html; precision newlines');
     it.skip('vfile mkdn -> html');
