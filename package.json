@@ -5,13 +5,13 @@
     "build:micromark-extension-wikirefs": "cd micromark-extension-wikirefs && yarn build",
     "build:remark-wikirefs": "cd remark-wikirefs && yarn build",
     "build:mdast-util-wikirefs": "cd mdast-util-wikirefs && yarn build",
-    "lint": "yarn lint:micromark-extension-wikirefs && yarn lint:mdast-util-wikirefs && yarn lint:remark-wikirefs",
+    "lint": "yarn lint:micromark-extension-wikirefs; yarn lint:mdast-util-wikirefs; yarn lint:remark-wikirefs",
     "lint:micromark-extension-wikirefs": "cd micromark-extension-wikirefs && yarn lint",
     "lint:remark-wikirefs": "cd remark-wikirefs && yarn lint",
     "lint:mdast-util-wikirefs": "cd mdast-util-wikirefs && yarn lint",
     "test:micromark-extension-wikirefs": "cd micromark-extension-wikirefs && yarn test",
     "test:remark-wikirefs": "cd remark-wikirefs && yarn test",
     "test:mdast-util-wikirefs": "cd mdast-util-wikirefs && yarn test",
-    "test": "yarn test:micromark-extension-wikirefs && yarn test:mdast-util-wikirefs && yarn test:remark-wikirefs"
+    "test": "yarn test:micromark-extension-wikirefs; yarn test:mdast-util-wikirefs; yarn test:remark-wikirefs"
   }
 }
