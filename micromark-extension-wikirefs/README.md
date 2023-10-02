@@ -13,7 +13,7 @@ Note that this plugin only parses the input -- it is up to you to assign appropr
 
 ## Install
 
-This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c). Install [`micromark-extension-wikirefs`]() on `npm`.
+This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c). Install [`micromark-extension-wikirefs`](https://www.npmjs.com/package/micromark-extension-wikirefs) on `npm`.
 
 ```
 npm install micromark-extension-wikirefs

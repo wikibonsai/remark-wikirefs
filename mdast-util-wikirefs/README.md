@@ -14,7 +14,7 @@ Using [`remark`](https://github.com/remarkjs/remark)?  You probably shouldn’t 
 
 ## Install
 
-This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c). Install [`mdast-util-wikirefs`]() on `npm`.
+This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c). Install [`mdast-util-wikirefs`](https://www.npmjs.com/package/mdast-util-wikirefs) on `npm`.
 
 ```
 npm install mdast-util-wikirefs
