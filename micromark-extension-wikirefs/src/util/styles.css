@@ -46,7 +46,7 @@ a[href] {
 a[href]:visited {
   color: purple;
 }
-/* (internal) wikilinks */
+/* (internal) wiki links */
 a.wiki[href] {
   color: #3e5c50;
 }
