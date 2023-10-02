@@ -1,8 +1,6 @@
 import type { WikiLinkNode } from '../../src/util/types';
 
 
-// untyped
-
 export function validNode(linktype: string = ''): WikiLinkNode {
   return {
     type: 'wikilink',
@@ -16,6 +14,8 @@ export function validNode(linktype: string = ''): WikiLinkNode {
         doctype: '',
         label: '',
         linktype: linktype,
+        htmlHref: '/tests/fixtures/fname-a',
+        htmlText: 'title a',
       },
       hName: 'a',
       hProperties: {
@@ -42,6 +42,8 @@ export function invalidNode(linktype: string = ''): WikiLinkNode {
         doctype: '',
         label: '',
         linktype: linktype,
+        htmlHref: '',
+        htmlText: (linktype === '') ? '[[no-html-href]]' : ':linktype::[[no-html-href]]',
       },
       hName: 'a',
       hProperties: {
@@ -65,6 +67,8 @@ export function labelNode(linktype: string = ''): WikiLinkNode {
         doctype: '',
         label: 'a label',
         linktype: linktype,
+        htmlHref: '/tests/fixtures/fname-a',
+        htmlText: 'a label',
       },
       hName: 'a',
       hProperties: {

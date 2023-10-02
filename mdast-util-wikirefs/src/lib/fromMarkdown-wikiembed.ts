@@ -115,7 +115,13 @@ export function fromMarkdownWikiEmbeds(opts?: Partial<WikiRefsOptions>): FromMar
     const htmlHref: string | undefined = fullOpts.resolveHtmlHref(filename);
     const htmlText: string | undefined = fullOpts.resolveHtmlText(filename) ? fullOpts.resolveHtmlText(filename) : filename;
     const doctype : string | undefined = fullOpts.resolveDocType            ? fullOpts.resolveDocType(filename)  : '';
+    // finish populating data
+    wikiEmbed.data.item.htmlHref = htmlHref;
     wikiEmbed.data.item.doctype = doctype;
+
+    ////
+    // render
+
     ////
     // media
     if (wikirefs.isMedia(filename)) {

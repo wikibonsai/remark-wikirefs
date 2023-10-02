@@ -102,10 +102,13 @@ export type WikiLinkData = {
   // block: string;
   linktype: string;
   label: string | undefined;
+  htmlHref: string;
+  htmlText: string;
 }
 
 export type WikiEmbedData = {
   doctype: string;
   filename: string;
   media: string;
+  htmlHref: string;
 }

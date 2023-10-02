@@ -162,6 +162,8 @@ The corresponding `wikilink` node for...
       "doctype": "",
       "label": "",
       "linktype": "reftype__linktype",
+      "htmlHref": "/fname-url",
+      "htmlText": "title",
     },
     "hName": "a",
     "hProperties": {
@@ -208,6 +210,8 @@ The corresponding `wikiembed` node for...
     "item": {
       "doctype": "",
       "filename": "embed-doc",
+      "media": "markdown",
+      "htmlHref": "/fname-url",
     },
     "hName": "p",
   },
@@ -309,6 +313,8 @@ The corresponding `wikiembed` node for...
     "item": {
       "doctype": "",
       "filename": "audio.mp3",
+      "media": "audio",
+      "htmlHref": "/fname-url",
     },
     "hName": "p",
   },
@@ -342,6 +348,8 @@ The corresponding `wikiembed` node for...
     "item": {
       "doctype": "",
       "filename": "image.png",
+      "media": "image",
+      "htmlHref": "/fname-url",
     },
     "hName": "p",
   },
@@ -373,6 +381,8 @@ The corresponding `wikiembed` node for...
     "item": {
       "doctype": "",
       "filename": "video.mp4",
+      "media": "video",
+      "htmlHref": "/fname-url",
     },
     "hName": "p",
   },

@@ -41,6 +41,8 @@ export function fromMarkdownWikiLinks(opts?: Partial<WikiRefsOptions>): FromMark
           filename: '',
           label: '',
           linktype: '',
+          htmlHref: '',
+          htmlText: '',
         } as WikiLinkData,
         hName: 'a',
         hProperties: {
@@ -83,14 +85,14 @@ export function fromMarkdownWikiLinks(opts?: Partial<WikiRefsOptions>): FromMark
   function exitWikiLink (this: CompileContext, token: Token): void {
     const wikiLink: WikiLinkNode = this.exit(token) as Node as unknown as WikiLinkNode;
 
-    // html-href
-    const htmlHref: string | undefined = fullOpts.resolveHtmlHref(wikiLink.data.item.filename);
     // html-text
     const labelText: string | undefined = wikiLink.data.item.label;
     const filename: string = wikiLink.data.item.filename;
+    // resolvers
+    const htmlHref: string = fullOpts.resolveHtmlHref(wikiLink.data.item.filename) ? fullOpts.resolveHtmlHref(wikiLink.data.item.filename) : '';
     let htmlText: string | undefined = fullOpts.resolveHtmlText(wikiLink.data.item.filename) ? fullOpts.resolveHtmlText(wikiLink.data.item.filename) : wikiLink.data.item.filename;
     // invalid
-    if (htmlHref === undefined) {
+    if (htmlHref.length === 0) {
       htmlText = '';
       if (wikiLink.data.item.linktype) {
         htmlText += (wikirefs.CONST.MARKER.PREFIX + wikiLink.data.item.linktype + wikirefs.CONST.MARKER.TYPE);
@@ -109,38 +111,40 @@ export function fromMarkdownWikiLinks(opts?: Partial<WikiRefsOptions>): FromMark
         }
       }
     }
+    const doctype: string = (fullOpts.resolveDocType) ? fullOpts.resolveDocType(filename) : '';
+    // finish populating data
+    wikiLink.data.item.htmlHref = htmlHref;
+    wikiLink.data.item.htmlText = htmlText;
+    wikiLink.data.item.doctype = doctype;
+
+    ////
+    // render
+
     // css
     const cssClassArray: string[] = [];
     cssClassArray.push(fullOpts.cssNames.wiki);
     cssClassArray.push(fullOpts.cssNames.link);
     // invalid
-    if (htmlHref === undefined) {
+    if (htmlHref.length === 0) {
       cssClassArray.push(fullOpts.cssNames.invalid);
     // valid
     } else {
       // linktype
       /* eslint-disable indent */
-      const linkType: string | undefined = wikiLink.data.item.linktype
+      const linktype: string | undefined = wikiLink.data.item.linktype
                                             ? wikiLink.data.item.linktype
                                             : undefined;
       /* eslint-enable indent */
-      if (linkType !== undefined && linkType.length !== 0) {
+      if (linktype !== undefined && linktype.length !== 0) {
         const type: string = fullOpts.cssNames.type;
-        const linkTypeSlug: string = linkType.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+        const linkTypeSlug: string = linktype.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
         cssClassArray.push(type);
         cssClassArray.push(fullOpts.cssNames.reftype + linkTypeSlug);
       }
       // doctype
-      let docType: string = '';
-      if (fullOpts.resolveDocType) {
-        const resolvedDocType: string | undefined = fullOpts.resolveDocType(filename);
-        docType = resolvedDocType ? resolvedDocType : '';
-        // set data
-        wikiLink.data.item.doctype = docType;
-        if (docType !== undefined && docType.length !== 0) {
-          const docTypeSlug: string = docType.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
-          cssClassArray.push(fullOpts.cssNames.doctype + docTypeSlug);
-        }
+      if (doctype.length > 0) {
+        const docTypeSlug: string = doctype.trim().toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+        cssClassArray.push(fullOpts.cssNames.doctype + docTypeSlug);
       }
     }
 

@@ -73,6 +73,14 @@ export function htmlWikiLinks(opts: Partial<WikiRefsOptions>): HtmlExtension {
     const htmlHref: string | undefined = fullOpts.resolveHtmlHref(filename);
     let   htmlText: string             = (fullOpts.resolveHtmlText(filename) !== undefined) ? fullOpts.resolveHtmlText(filename) : filename;
     const doctype : string             = (fullOpts.resolveDocType && (fullOpts.resolveDocType(filename) !== undefined))          ? fullOpts.resolveDocType(filename)  : '';
+    // finish populating data
+    wikiLink.htmlHref = htmlHref;
+    wikiLink.htmlText = htmlText;
+    wikiLink.doctype = doctype;
+
+    ////
+    // render
+
     // open
     let htmlOpen: string = '';
     if (htmlHref === undefined) {

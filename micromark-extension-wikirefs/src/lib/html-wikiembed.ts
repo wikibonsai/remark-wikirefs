@@ -98,7 +98,13 @@ export function htmlWikiEmbeds(opts: Partial<WikiRefsOptions>): HtmlExtension {
     const htmlHref: string | undefined = fullOpts.resolveHtmlHref(filename);
     const htmlText: string             = (fullOpts.resolveHtmlText(filename) !== undefined) ? fullOpts.resolveHtmlText(filename) : filename;
     const doctype : string             = (fullOpts.resolveDocType && (fullOpts.resolveDocType(filename) !== undefined))          ? fullOpts.resolveDocType(filename)  : '';
+    // finish populating data
+    wikiEmbed.htmlHref = htmlHref;
     wikiEmbed.doctype = doctype;
+
+    ////
+    // render
+
     ////
     // media
     // open : wikiembed
