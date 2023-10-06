@@ -104,6 +104,8 @@ a.invalid {
 }
 /* embed media */
 .embed-media {
+  display: flex;
+  justify-content: center;
   margin: 0 auto;
 }
 .embed-audio {
