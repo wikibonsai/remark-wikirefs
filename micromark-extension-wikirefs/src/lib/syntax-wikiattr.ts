@@ -1,4 +1,3 @@
-import { merge } from 'lodash-es';
 import { ok as assert } from 'uvu/assert';
 import type { Event } from 'micromark/dev/lib/compile';
 import type { Tokenizer } from 'micromark/dev/lib/initialize/document';
@@ -76,6 +75,8 @@ export function syntaxWikiAttrs(opts?: Partial<WikiRefsOptions>): Extension {
     while (++index < events.length) {
       if (events[index][1].type.indexOf('caml') === 0) {
         return events;
+      } else {
+        // perform conversion here
       }
     }
     // reset index for actual run-through
@@ -281,6 +282,7 @@ export function syntaxWikiAttrs(opts?: Partial<WikiRefsOptions>): Extension {
         //   effects.enter(WikiRefToken.wikiAttr, { _container: true });
         //   state.open = true;
         // }
+        // effects.enter(bufferedWikiAttr);
         effects.enter(WikiRefToken.wikiAttr);
         effects.enter(WikiRefToken.wikiRefTypePrefixMarker);
         return consumeAttrTypePrefixMarker(code);
@@ -291,6 +293,7 @@ export function syntaxWikiAttrs(opts?: Partial<WikiRefsOptions>): Extension {
         //   effects.enter(WikiRefToken.wikiAttr, { _container: true });
         //   state.open = true;
         // }
+        // effects.enter(bufferedWikiAttr);
         effects.enter(WikiRefToken.wikiAttr);
         effects.enter(WikiRefToken.wikiAttrTypeTxt);
         return consumeAttrTypeTxt(code);
@@ -524,6 +527,37 @@ export function syntaxWikiAttrs(opts?: Partial<WikiRefsOptions>): Extension {
       if (!markdownLineEnding(code) && (code !== codes.eof)) { return nok(code); }
       if (!hasAttrType || !hasFileName) { return nok(code); }
       effects.exit(WikiRefToken.wikiAttr);
+      // effects.exit(bufferedWikiAttr);
+      // from: https://github.com/micromark/micromark/blob/main/packages/micromark-core-commonmark/dev/lib/code-indented.js#L91
+      // if this is a lazy line, we should interrupt
+      // if (self.parser.lazy[position.line]) {
+      // if (self.parser.lazy[self.now().line]) {
+      //   self.interrupt = true;
+      //   // return nok(code);
+      //   // return nok;
+      // }
+      // Blank or interrupting line.
+      // if (
+      //   self.parser.lazy[self.now().line] ||
+      //   code === codes.eof ||
+      //   markdownLineEnding(code)
+      // ) {
+      //   return nok(code);
+      // }
+
+      // TODO THIS WAS THE LAST SPOT
+      // if we are inside a list, signal an interrupt
+      // const position: Point = self.now();
+      // if (self.parser.lazy[position.line]) {
+      // // if (self.parser.lazy[position.line] && self.containerState && self.containerState.type === 'list') {
+      //   // self.interrupt = true;
+      //   return effects.interrupt(self.parser.constructs.flow, nok, ok)(code);
+      //   // return ok(code);
+      // }
+
+      // const state = self.containerState;
+      // assert(state, 'expected `containerState` to be defined in container');
+
       return ok(code);
     }
 
