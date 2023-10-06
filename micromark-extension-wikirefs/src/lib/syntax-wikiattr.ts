@@ -177,9 +177,12 @@ export function syntaxWikiAttrs(opts?: Partial<WikiRefsOptions>): Extension {
     }
     // exit attrbox
     attrbox = push(attrbox, [['exit', events[attrExitEvents[attrExitEvents.length - 1]][1], context]]);
-
+    /* eslint-disable indent */
     // remove all attr events from original events array //
-    const toss: number[] = attrToss.concat(attrEnterEvents).concat(attrEvents).concat(attrExitEvents);
+    const toss: number[] = attrToss.concat(attrEnterEvents)
+                                   .concat(attrEvents)
+                                   .concat(attrExitEvents);
+    /* eslint-enable indent */
     for (let i = (events.length - 1); i >= 0; i--) {
       if (toss.includes(i)) {
         events.splice(i, 1);
