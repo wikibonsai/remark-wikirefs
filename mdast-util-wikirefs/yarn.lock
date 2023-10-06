@@ -2684,10 +2684,10 @@ micromark-core-commonmark@^1.0.1:
     micromark-util-types "^1.0.1"
     uvu "^0.5.0"
 
-micromark-extension-wikirefs@^0.0.4-mm:
-  version "0.0.4-mm"
-  resolved "https://registry.yarnpkg.com/micromark-extension-wikirefs/-/micromark-extension-wikirefs-0.0.4-mm.tgz#250e2e56085c0a145d5a125f269b343330fdae5f"
-  integrity sha512-KcYtLIKg0ZFhbAtjwUmu75KjkH7epKBO/1F/7rHhYWafOyU68Ty8LqaLXsJap0U7E+tPGibGi/TppavN0gZkZA==
+micromark-extension-wikirefs@^0.0.5-mm:
+  version "0.0.5-mm"
+  resolved "https://registry.yarnpkg.com/micromark-extension-wikirefs/-/micromark-extension-wikirefs-0.0.5-mm.tgz#8a8a938535ae0d034012feb6209f2b3baa28ce6c"
+  integrity sha512-v9ANJq6+me8sE5ge0C74DSRNeHXYOyj+Tzdvudboiowlt+8aivf/dz97VM6IlkZGPxxWTlYd2Kg9KMYs0AiVqQ==
   dependencies:
     lodash-es "^4.17.21"
     micromark-factory-space "^1.0.0"
