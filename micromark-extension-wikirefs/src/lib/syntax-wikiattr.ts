@@ -48,9 +48,9 @@ export function syntaxWikiAttrs(opts?: Partial<WikiRefsOptions>): Extension {
         name: 'wikiattr',
         // from: https://github.com/micromark/micromark/blob/main/packages/micromark-util-types/index.js#L277
         concrete: true,
+        add: 'before',
         tokenize: tokenizeWikiAttrs as Tokenizer,
         resolveAll: resolveWikiAttrs as Resolver,
-        add: 'before',
       };
     }
   }
