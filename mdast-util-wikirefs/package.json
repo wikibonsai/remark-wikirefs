@@ -36,6 +36,7 @@
     "mdast-util-to-markdown": "^1.5.0",
     "micromark-extension-wikirefs": "^0.0.5-mm",
     "micromark-util-types": "^1.0.2",
+    "unist-util-select": "^5.0.0",
     "wikirefs": "^0.0.4"
   },
   "devDependencies": {
