@@ -3693,10 +3693,10 @@ which@^2.0.1:
   dependencies:
     isexe "^2.0.0"
 
-wikirefs-spec@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/wikirefs-spec/-/wikirefs-spec-0.0.3.tgz#17018cb28abe399f4a7633cb13526b3fbf29a6b9"
-  integrity sha512-mcn8f91GTKox3XGk7dVRwvouj5U0Qzt0Ae0HCm3s+DrIY31JdE1DQginwX9GIkjCVR4slwHlBvF647EyVEHcjA==
+wikirefs-spec@^0.0.4-spec:
+  version "0.0.4-spec"
+  resolved "https://registry.yarnpkg.com/wikirefs-spec/-/wikirefs-spec-0.0.4-spec.tgz#0114e9c9ba7eacff10356aa9b89cfb8ec271417e"
+  integrity sha512-ZNGCfCZjd2b/DGlEPHM9wSTVxcSHdDVotiIE0QXqP5/AWqZlE43W7s/vdYQFxCyYnMO0VWS8H/GGsIoIVB3jUg==
 
 wikirefs@^0.0.4:
   version "0.0.4"
