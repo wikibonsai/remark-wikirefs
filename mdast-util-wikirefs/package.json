@@ -1,7 +1,7 @@
 {
   "name": "mdast-util-wikirefs",
   "private": false,
-  "version": "0.0.5-md",
+  "version": "0.0.6-md",
   "description": "Converts a `micromark` token stream into an `mdast` syntax tree.",
   "license": "GPL-3.0",
   "author": {
