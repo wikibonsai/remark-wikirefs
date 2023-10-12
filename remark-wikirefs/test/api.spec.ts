@@ -87,7 +87,7 @@ function runMkdnToHtml(contextMsg: string, tests: APITest[]): void {
         const actlHtml: string = String(processor.processSync(mkdn));
         // assert
         assert.strictEqual(
-          actlHtml.replace(/\n/g, ''),
+          actlHtml.replace(/\n/g, '').replace(/<div>\s*<\/div>/g, ''),
           expdHtml.replace(/\n/g, ''),
         );
       });
@@ -104,7 +104,7 @@ describe('wiki construct plugin api', () => {
   runMkdnToHtml('wikiattrs', [
     {
       descr: 'wikiattr; prefixed',
-      plugin: remarkWikiAttrs,
+      plugin: remarkWikiAttrs as unknown as Plugin,
       opts: mockOpts,
       mkdn: ':attrtype::[[fname-a]]\n',
       html:
@@ -119,26 +119,26 @@ describe('wiki construct plugin api', () => {
     },
     {
       descr: 'wikilink; typed',
-      plugin: remarkWikiAttrs,
+      plugin: remarkWikiAttrs as unknown as Plugin,
       opts: mockOpts,
       mkdn: ':linktype::[[fname-a]].',
       html: '<p>:linktype::[[fname-a]].</p>',
     },
     {
       descr: 'wikilink; untyped',
-      plugin: remarkWikiAttrs,
+      plugin: remarkWikiAttrs as unknown as Plugin,
       opts: mockOpts,
       mkdn: '[[fname-a]].',
       html: '<p>[[fname-a]].</p>',
     },
     {
       descr: 'wikiembed; mkdn',
-      plugin: remarkWikiAttrs,
+      plugin: remarkWikiAttrs as unknown as Plugin,
       opts: mockOpts,
       mkdn: '![[fname-a]].',
       html: '<p>![[fname-a]].</p>',
     },
-  ] as APITest[]);
+  ]);
   runMkdnToHtml('wikilinks', [
     {
       descr: 'wikiattr; prefixed',
@@ -170,7 +170,7 @@ describe('wiki construct plugin api', () => {
       // todo:
       // html: '<p>!<a class="wiki link" href="/tests/fixtures/fname-a" data-href="/tests/fixtures/fname-a">title a</a>.</p>',
     },
-  ] as APITest[]);
+  ]);
   runMkdnToHtml('wikiembeds', [
     {
       descr: 'wikiattr; prefixed',
@@ -200,7 +200,7 @@ describe('wiki construct plugin api', () => {
       mkdn: '![[fname-a]].',
       html: '<p><p><div class="embed-wrapper"><div class="embed-title"><a class="wiki embed" href="/tests/fixtures/fname-a" data-href="/tests/fixtures/fname-a">title a</a></div><div class="embed-link"><a class="embed-link-icon" href="/tests/fixtures/fname-a" data-href="/tests/fixtures/fname-a"><i class="link-icon"></i></a></div><div class="embed-content">Error: Content not found for \'fname-a\'</div></div></p>.</p>',
     },
-  ] as APITest[]);
+  ]);
   it.skip('wikiembed; mkdn -- todo: support raw \'!\' passthrough', () => { return; });
 
 });

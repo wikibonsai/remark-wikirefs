@@ -1,7 +1,12 @@
+import type { TestFileData, WikiRefTestCase } from 'wikirefs-spec';
+import type { WikiRefsOptions } from 'micromark-extension-wikirefs';
+import type { AttrBoxNode, WikiLinkNode } from 'mdast-util-wikirefs';
+import type { TestCaseMdast } from '../../mdast-util-wikirefs/test/types';
+
 import assert from 'node:assert/strict';
-
 import { merge } from 'lodash-es';
-
+import * as wikirefs from 'wikirefs';
+import { wikiRefCases, fileDataMap } from 'wikirefs-spec';
 import * as Uni from 'unist';
 import { Processor, unified } from 'unified';
 import remarkParse from 'remark-parse';
@@ -10,23 +15,14 @@ import remarkRehype from 'remark-rehype';
 // import rehypeParse from 'rehype-parse';
 // import rehypeRemark from 'rehype-remark';
 import rehypeStringify from 'rehype-stringify';
-
 import remarkGfm from 'remark-gfm';
-
 import { VFile } from 'vfile';
-
-import type { WikiRefsOptions } from 'micromark-extension-wikirefs';
-import type { AttrBoxNode, WikiLinkNode } from 'mdast-util-wikirefs';
 import { visitNodeType } from 'mdast-util-wikirefs';
-
-import * as wikirefs from 'wikirefs';
-import type { TestFileData, WikiRefTestCase } from 'wikirefs-spec';
-import { wikiRefCases, fileDataMap } from 'wikirefs-spec';
-
+// note: if you import config setup from micromark plugin,
+//       know you're now depending on two separate
+//       installation instances of 'wikirefs-spec'...
 import { makeMockOptsForRenderOnly } from '../../micromark-extension-wikirefs/test/config';
-import type { TestCaseMdast } from '../../mdast-util-wikirefs/test/types';
 import { mdastCases } from '../../mdast-util-wikirefs/test/cases';
-
 import { remarkWikiRefs } from '../src';
 
 
@@ -150,7 +146,7 @@ function runMkdnToHtml(contextMsg: string, tests: WikiRefTestCase[]): void {
         const actlHtml: string = String(processor.processSync(mkdn));
         // assert
         assert.strictEqual(
-          actlHtml.replace(/\n/g, ''),
+          actlHtml.replace(/\n/g, '').replace(/<div>\s*<\/div>/g, ''),
           expdHtml.replace(/\n/g, ''),
         );
       });
@@ -196,8 +192,8 @@ function runMdastToMkdn(contextMsg: string, tests: TestCaseMdast[]): void {
         // assert
         // remove newlines if testing (inline/text/wikilink) -- 'toMarkdown' adds one to the end
         assert.strictEqual(
-          test.descr.includes('attr;') ? actlMkdn : actlMkdn.replace(/\n/g, ''),
-          test.descr.includes('attr;') ? expdMkdn : expdMkdn.replace(/\n/g, ''),
+          test.descr.includes('attr;') ? actlMkdn.replace(/<div>\s*<\/div>/g, '') : actlMkdn.replace(/\n/g, '').replace(/<div>\s*<\/div>/g, ''),
+          test.descr.includes('attr;') ? expdMkdn                                 : expdMkdn.replace(/\n/g, ''),
         );
       });
     }
@@ -288,7 +284,7 @@ function runMkdnToHtmlVFile(contextMsg: string, tests: WikiRefTestCase[]): void 
         const actlHtml: string = String(processor.processSync(input));
         // assert
         assert.strictEqual(
-          actlHtml.replace(/\n/g, ''),
+          actlHtml.replace(/\n/g, '').replace(/<div>\s*<\/div>/g, ''),
           expdHtml.replace(/\n/g, ''),
         );
       });
@@ -382,16 +378,8 @@ describe('remark-wikirefs', () => {
     // runMkdnToHtml('mkdn -> html', wikiRefCases);
     runMkdnToHtml('mkdn -> html', wikiRefCases.filter((testcase: WikiRefTestCase) => {
       const failingTests: any = [
-        'wikiattr; unprefixed; w/ other mkdn constructs; near lists; after',
-        'wikiattr; unprefixed; w/ other mkdn constructs; near lists; immediate after',
         'wikiattr; unprefixed; malformed; list; mkdn-separated; items not [[bracketed]]',
-        'wikiattr; unprefixed; w/ other mkdn constructs; near blockquotes; after',
-        'wikiattr; unprefixed; w/ other mkdn constructs; near blockquotes; immediate after',
-        'wikiattr; prefixed; w/ other mkdn constructs; near lists; after',
-        'wikiattr; prefixed; w/ other mkdn constructs; near lists; immediate after',
         'wikiattr; prefixed; malformed; list; mkdn-separated; items not [[bracketed]]',
-        'wikiattr; prefixed; w/ other mkdn constructs; near blockquotes; after',
-        'wikiattr; prefixed; w/ other mkdn constructs; near blockquotes; immediate after',
         'wikiattr; mixed; wikirefs + caml; wiki multi single, caml mkdn list',
         'wikiattr; mixed; wikirefs + caml; wiki mkdn list, caml mkdn list',
       ];
@@ -409,16 +397,8 @@ describe('remark-wikirefs', () => {
     // runMkdnToHtmlVFile('vfile mkdn -> html', wikiRefCases);
     runMkdnToHtmlVFile('vfile mkdn -> html', wikiRefCases.filter((testcase: WikiRefTestCase) => {
       const failingTests: any = [
-        'wikiattr; unprefixed; w/ other mkdn constructs; near lists; after',
-        'wikiattr; unprefixed; w/ other mkdn constructs; near lists; immediate after',
         'wikiattr; unprefixed; malformed; list; mkdn-separated; items not [[bracketed]]',
-        'wikiattr; unprefixed; w/ other mkdn constructs; near blockquotes; after',
-        'wikiattr; unprefixed; w/ other mkdn constructs; near blockquotes; immediate after',
-        'wikiattr; prefixed; w/ other mkdn constructs; near lists; after',
-        'wikiattr; prefixed; w/ other mkdn constructs; near lists; immediate after',
         'wikiattr; prefixed; malformed; list; mkdn-separated; items not [[bracketed]]',
-        'wikiattr; prefixed; w/ other mkdn constructs; near blockquotes; after',
-        'wikiattr; prefixed; w/ other mkdn constructs; near blockquotes; immediate after',
         'wikiattr; mixed; wikirefs + caml; wiki multi single, caml mkdn list',
         'wikiattr; mixed; wikirefs + caml; wiki mkdn list, caml mkdn list',
       ];

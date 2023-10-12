@@ -25,6 +25,15 @@ declare module 'mdast-util-from-markdown' {
 
 // attrs / wikiattr
 
+// note: this node simply holds data from markdown caml-attributes,
+//       which is used to build the html attrbox
+export interface AttrBoxDataNode extends Uni.Data {
+  type: 'attrbox-data';
+  data: {
+    items: AttrData;
+  }
+}
+
 export interface AttrBoxNode extends Uni.Parent {
   type: 'attrbox';
   children: (AttrBoxTitleNode | AttrBoxListNode)[];
@@ -53,7 +62,7 @@ export interface AttrBoxListNode extends Uni.Parent {
   };
 }
 
-export interface AttrKeyNode extends Uni.Literal {
+export interface AttrKeyNode extends Uni.Parent {
   type: 'attr-key';
   children: any[]; // text node: https://github.com/syntax-tree/mdast#text
   data: {

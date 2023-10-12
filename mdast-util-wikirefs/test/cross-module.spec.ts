@@ -70,8 +70,10 @@ describe('cross-module', () => {
       if (!wikiembeds.handlers) { assert.fail(); }
       if (!toMarkdownPlugin.extensions) { assert.fail(); }
       assert.deepStrictEqual(Object.keys(wikiattrs.handlers), [
-        // see 'startAttrBoxNode.type'
-        'attrbox',
+        // see 'startAttrBoxDataNode.type'
+        // note: redundant naming because 'case-conversion' <-> caseConversion seems to not be working...
+        'attrbox-data',
+        'attrboxData',
       ]);
       assert.deepStrictEqual(Object.keys(wikilinks.handlers), [
         // see 'startWikiLinkNode.type'

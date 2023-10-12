@@ -41,34 +41,7 @@ describe('configs', () => {
   describe('doctypes', () => {
 
     run('\'doctype feature\'; \'resolveDocType\' populates doctype css class', [
-      {
-        descr: 'wikiattr; unprefixed',
-        opts: mockOpts,
-        mkdn: 'attrtype::[[fname-a]]\n',
-        html: 
-`<aside class="attrbox">
-<span class="attrbox-title">Attributes</span>
-<dl>
-<dt>attrtype</dt>
-<dd><a class="attr wiki reftype__attrtype doctype__doctype" href="/fname-a" data-href="/fname-a">fname a</a></dd>
-</dl>
-</aside>
-`,
-      },
-      {
-        descr: 'wikiattr; prefixed',
-        opts: mockOpts,
-        mkdn: ':attrtype::[[fname-a]]\n',
-        html: 
-`<aside class="attrbox">
-<span class="attrbox-title">Attributes</span>
-<dl>
-<dt>attrtype</dt>
-<dd><a class="attr wiki reftype__attrtype doctype__doctype" href="/fname-a" data-href="/fname-a">fname a</a></dd>
-</dl>
-</aside>
-`,
-      },
+      // wikiattrs do not render at the micromark level
       {
         descr: 'wikilink; typed',
         opts: mockOpts,

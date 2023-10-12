@@ -37,7 +37,29 @@ Running the processor on the following markdown:
 :attrtype::[[fname]]
 ```
 
-Will produce the following `attrbox` node:
+Will produce the following `attrbox-data` node:
+
+```json
+{
+  "type": "attrbox-data",
+  "data": {
+    "items": {
+      "attrtype": [
+        {
+          "type": "wiki",
+          "doctype": "",
+          "filename": "fname",
+          "htmlHref": "/fname-url",
+          "htmlText": "title",
+          "baseUrl": "",
+        }
+      ],
+    },
+  }
+}
+```
+
+Which in turn will generate the following `attrbox` node:
 
 ```json
 {

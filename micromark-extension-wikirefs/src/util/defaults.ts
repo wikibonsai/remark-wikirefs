@@ -41,6 +41,7 @@ export interface DefaultsWikiRefs {
   };
   attrs: {
     enable: boolean;
+    render: boolean;
   },
   links: {
     enable: boolean;
@@ -64,6 +65,7 @@ export function defaultsWikiRefs(): DefaultsWikiRefs {
     },
     attrs: {
       enable: true,
+      render: true,
     },
     links: {
       enable: true,

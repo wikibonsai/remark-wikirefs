@@ -77,7 +77,7 @@ export interface WikiRefsOptions {
 // (for html and ast)
 
 export type AttrData = {
-  [key: string]: (AttrDataItem | WikiAttrData)[];
+  [key: string]: WikiAttrData[];
 }
 
 // same in remark-caml

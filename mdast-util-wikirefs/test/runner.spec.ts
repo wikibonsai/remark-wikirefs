@@ -1,30 +1,31 @@
-import assert from 'node:assert/strict';
-
-import { merge } from 'lodash-es';
-
-import * as Uni from 'unist';
-import { toMarkdown } from 'mdast-util-to-markdown';
-import { fromMarkdown } from 'mdast-util-from-markdown';
-
 import type { WikiRefsOptions } from 'micromark-extension-wikirefs';
-import { syntaxWikiRefs } from 'micromark-extension-wikirefs';
-
-import * as wikirefs from 'wikirefs';
 import type { TestFileData } from 'wikirefs-spec';
-import { fileDataMap } from 'wikirefs-spec';
-
-import { makeMockOptsForRenderOnly } from '../../micromark-extension-wikirefs/test/config';
-import { visitNodeType } from './util/visit';
 import type {
   AttrBoxNode,
+  AttrBoxDataNode,
   EmbedMkdnWrapperNode,
   EmbedMediaSpanNode,
   WikiLinkNode,
+  WikiEmbedNode,
 } from '../src/util/types';
-import { fromMarkdownWikiRefs, toMarkdownWikiRefs } from '../src';
+import type { TestCaseMdast, TestCaseMdastBuilder } from './types';
 
-import type { TestCaseMdast } from './types';
-import { mdastCases } from './cases';
+import assert from 'node:assert/strict';
+import { merge } from 'lodash-es';
+import * as wikirefs from 'wikirefs';
+import { fileDataMap } from 'wikirefs-spec';
+import * as Uni from 'unist';
+import { toMarkdown } from 'mdast-util-to-markdown';
+import { fromMarkdown } from 'mdast-util-from-markdown';
+import { syntaxWikiRefs } from 'micromark-extension-wikirefs';
+import { makeMockOptsForRenderOnly } from '../../micromark-extension-wikirefs/test/config';
+import { visitNodeType } from './util/visit';
+import {
+  initWikiAttrBox,
+  fromMarkdownWikiRefs,
+  toMarkdownWikiRefs,
+} from '../src';
+import { mdastCases, mdastBuilderCases } from './cases';
 
 
 // setup
@@ -39,7 +40,7 @@ function runFromMarkdown(contextMsg: string, tests: TestCaseMdast[]): void {
       it(desc, () => {
         // test vars
         const mkdn: string = test.mkdn;
-        const expdNode: Partial<AttrBoxNode | WikiLinkNode | EmbedMediaSpanNode | EmbedMkdnWrapperNode> = test.node as (AttrBoxNode | WikiLinkNode | EmbedMediaSpanNode | EmbedMkdnWrapperNode);
+        const expdNode: Partial<AttrBoxDataNode | WikiLinkNode | EmbedMediaSpanNode | EmbedMkdnWrapperNode> = test.node as (AttrBoxDataNode | WikiLinkNode | EmbedMediaSpanNode | EmbedMkdnWrapperNode);
         let cycleStack: string[] = [];
         // setup / go
         // note: wrap fromMarkdown context for markdown wikiembeds to work
@@ -107,14 +108,14 @@ function runToMarkdown(contextMsg: string, tests: TestCaseMdast[]): void {
         // test vars
         // merge suite options with case options
         const opts: WikiRefsOptions = merge(mockOpts, test.opts);
-        const node: AttrBoxNode | WikiLinkNode = test.node as (AttrBoxNode | WikiLinkNode);
+        const node: AttrBoxDataNode | WikiLinkNode | WikiEmbedNode = test.node as (AttrBoxDataNode | WikiLinkNode | WikiEmbedNode);
         const expdMkdn: string = test.mkdn;
         // setup
         // build ast: ast nodes will normally appear in paragraph
         //            context, which can affect symbol escaping
         const paragraph: Uni.Parent = {
           type: 'paragraph',
-          children: [node as (AttrBoxNode | WikiLinkNode)],
+          children: [node as (AttrBoxDataNode | WikiLinkNode | WikiEmbedNode)],
         };
         // for (text) 'WikiLink' test cases, but not for 'WikiEmbed' cases
         if (expdMkdn.includes('.') && !expdMkdn.includes('!')) {
@@ -146,6 +147,34 @@ function runToMarkdown(contextMsg: string, tests: TestCaseMdast[]): void {
   });
 }
 
+function runInitWikiAttrBox(contextMsg: string, tests: TestCaseMdastBuilder[]): void {
+  context(contextMsg, () => {
+    for(const test of tests) {
+      const desc: string = `[${('00' + (++i)).slice(-3)}] ` + (test.descr || '');
+      it(desc, () => {
+        // test vars
+        // merge suite options with case options
+        const opts: WikiRefsOptions = merge(mockOpts, test.opts);
+        const inNodes: AttrBoxDataNode[] = test.inNodes as AttrBoxDataNode[];
+        const expdOutNode: AttrBoxNode = test.outNode as AttrBoxNode;
+        // setup
+        // build ast: ast nodes will normally appear in paragraph
+        //            context, which can affect symbol escaping
+        const paragraph: Uni.Parent = {
+          type: 'paragraph',
+          children: inNodes,
+        };
+        const root: Uni.Parent = {
+          type: 'root',
+          children: [paragraph],
+        };
+        const actlOutNode: AttrBoxNode | undefined = initWikiAttrBox(root, opts);
+        assert.deepStrictEqual(actlOutNode, expdOutNode);
+      });
+    }
+  });
+}
+
 describe('mdast-util-wikirefs', () => {
 
   beforeEach(() => {
@@ -154,6 +183,7 @@ describe('mdast-util-wikirefs', () => {
 
   runFromMarkdown('mkdn -> mdast', mdastCases);
   runToMarkdown('mdast -> mkdn', mdastCases);
+  runInitWikiAttrBox('build wikiattrs', mdastBuilderCases);
   it.skip('toMarkdown: precision newlines -- see \'runToMarkdown\' assert modifications');
 
 });

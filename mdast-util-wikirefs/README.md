@@ -49,7 +49,29 @@ The corresponding `wikiattr` node for...
 ':attrtype::[[fname]]\n'
 ```
 
-...in the abstract syntax tree has the form below, where:
+...is first converted to a data node which takes the form below:
+
+```json
+{
+  "type": "attrbox-data",
+  "data": {
+    "items": {
+      "attrtype": [
+        {
+          "type": "wiki",
+          "doctype": "",
+          "filename": "fname",
+          "htmlHref": "/fname-url",
+          "htmlText": "title",
+          "baseUrl": "",
+        }
+      ],
+    },
+  }
+}
+```
+
+Data nodes like this are then extracted after render, are merged, and a single attrbox node is generated and inserted at the top of the document in the abstract syntax tree. It has the form below, where:
 
 * `data.items` contains the original markdown source parsed into the individual components of the wikiattr.
 

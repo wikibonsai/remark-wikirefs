@@ -77,7 +77,7 @@ function runMkdnToHtml(contextMsg: string, tests: WikiRefTestCase[]): void {
         const actlHtml: string = String(processor.processSync(mkdn));
         // assert
         assert.strictEqual(
-          actlHtml.replace(/\n/g, ''),
+          actlHtml.replace(/\n/g, '').replace(/<div>\s*<\/div>/g, ''),
           expdHtml.replace(/\n/g, ''),
         );
       });

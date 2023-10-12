@@ -3,6 +3,13 @@
 // mdast             : https://github.com/syntax-tree/mdast
 // hast              : https://github.com/syntax-tree/hast
 
+// buildMarkdown
+
+export {
+  // addWikiAttrVal, // mainly for use in caml plugin
+  initWikiAttrBox,
+} from './lib/attrbox';
+
 // fromMarkdown
 
 export { fromMarkdownWikiAttrs } from './lib/fromMarkdown-wikiattr';

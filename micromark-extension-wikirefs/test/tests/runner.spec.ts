@@ -1,16 +1,12 @@
-import assert from 'node:assert/strict';
+import type { TestFileData, WikiRefTestCase } from 'wikirefs-spec';
+import type { WikiRefsOptions } from '../../src/util/types';
 
+import assert from 'node:assert/strict';
+import * as wikirefs from 'wikirefs';
+import { fileDataMap, wikiLinkCases, wikiEmbedCases } from 'wikirefs-spec';
 import { micromark } from 'micromark';
 import { gfm, gfmHtml } from 'micromark-extension-gfm';
-
-import * as wikirefs from 'wikirefs';
-
-import type { TestFileData, WikiRefTestCase } from 'wikirefs-spec';
-import { fileDataMap, wikiRefCases } from 'wikirefs-spec';
-
-import type { WikiRefsOptions } from '../../src/util/types';
 import { syntaxWikiRefs, htmlWikiRefs } from '../../src';
-
 import { makeMockOptsForRenderOnly } from '../config.js';
 
 
@@ -79,7 +75,7 @@ describe('micromark-wikirefs', () => {
 
   before(() => {
     // prep special cases
-    wikiRefCases.forEach((testcase: WikiRefTestCase) => {
+    wikiLinkCases.forEach((testcase: WikiRefTestCase) => {
       // for gfm footnote cases...
       // note: these do not match remark
       // - includes =""
@@ -110,31 +106,6 @@ describe('micromark-wikirefs', () => {
 </section>
 `;
         }
-        // wikiattrs not allowed inside
-        if (testcase.descr === 'wikiattr; prefixed; w/ other mkdn constructs; nested; gfm; footnote') {
-          testcase.html =
-`<p><sup><a href="#user-content-fn-fn" id="user-content-fnref-fn" data-footnote-ref="" aria-describedby="footnote-label">1</a></sup></p>
-<section data-footnotes="" class="footnotes"><h2 id="footnote-label" class="sr-only">Footnotes</h2>
-<ol>
-<li id="user-content-fn-fn">
-<p><a class="wiki link type reftype__attrtype" href="/tests/fixtures/fname-a" data-href="/tests/fixtures/fname-a">title a</a> <a href="#user-content-fnref-fn" data-footnote-backref="" class="data-footnote-backref" aria-label="Back to content">↩</a></p>
-</li>
-</ol>
-</section>
-`;
-        }
-        if (testcase.descr === 'wikiattr; unprefixed; w/ other mkdn constructs; nested; gfm; footnote') {
-          testcase.html =
-`<p><sup><a href="#user-content-fn-fn" id="user-content-fnref-fn" data-footnote-ref="" aria-describedby="footnote-label">1</a></sup></p>
-<section data-footnotes="" class="footnotes"><h2 id="footnote-label" class="sr-only">Footnotes</h2>
-<ol>
-<li id="user-content-fn-fn">
-<p>attrtype::<a class="wiki link" href="/tests/fixtures/fname-a" data-href="/tests/fixtures/fname-a">title a</a> <a href="#user-content-fnref-fn" data-footnote-backref="" class="data-footnote-backref" aria-label="Back to content">↩</a></p>
-</li>
-</ol>
-</section>
-`;
-        }
       }
     });
   });
@@ -143,26 +114,11 @@ describe('micromark-wikirefs', () => {
     mockOpts = makeMockOptsForRenderOnly();
   });
 
-  // todo: fix failing tests
-  // run('mkdn -> html', wikiRefCases);
-  run('mkdn -> html', wikiRefCases.filter((testcase: WikiRefTestCase) => {
-    const failingTests: any = [
-      'wikiattr; unprefixed; w/ other mkdn constructs; near lists; after',
-      'wikiattr; unprefixed; w/ other mkdn constructs; near lists; immediate after',
-      'wikiattr; unprefixed; malformed; list; mkdn-separated; items not [[bracketed]]',
-      'wikiattr; unprefixed; w/ other mkdn constructs; near blockquotes; after',
-      'wikiattr; unprefixed; w/ other mkdn constructs; near blockquotes; immediate after',
-      'wikiattr; prefixed; w/ other mkdn constructs; near lists; after',
-      'wikiattr; prefixed; w/ other mkdn constructs; near lists; immediate after',
-      'wikiattr; prefixed; malformed; list; mkdn-separated; items not [[bracketed]]',
-      'wikiattr; prefixed; w/ other mkdn constructs; near blockquotes; after',
-      'wikiattr; prefixed; w/ other mkdn constructs; near blockquotes; immediate after',
-      'wikiattr; mixed; wikirefs + caml; wiki multi single, caml mkdn list',
-      'wikiattr; mixed; wikirefs + caml; wiki mkdn list, caml mkdn list'
-    ];
-    const skipFailing: boolean = !failingTests.some((descr: string) => descr === testcase.descr);
-    return skipFailing;
-  }));
+  // skip wikiattrs -- requires mdast-util extension
+  run('mkdn -> html', wikiLinkCases.filter((testcase) =>
+    testcase.descr !== 'wikilink; typed; base -- this is actually a valid wikiattr!')
+  );
+  run('mkdn -> html', wikiEmbedCases);
   it.skip('html -> mkdn; precision newlines -- see assert modifications');
   // see:
   // https://github.com/micromark/micromark/blob/main/packages/micromark/dev/lib/compile.js#L238

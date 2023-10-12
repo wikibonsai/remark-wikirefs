@@ -1,21 +1,18 @@
-import { ok as assert } from 'uvu/assert';
 import type { Event } from 'micromark/dev/lib/compile';
 import type { Tokenizer } from 'micromark/dev/lib/initialize/document';
 import type { ConstructRecord, Effects, State, TokenizeContext } from 'micromark/dev/lib/create-tokenizer';
 import type { Code, Extension, Point, Resolver } from 'micromark-util-types';
+import type { WikiRefsOptions } from '../util/types';
+
+import * as wikirefs from 'wikirefs';
 import { codes } from 'micromark-util-symbol/codes';
 import { types as UnifiedTypeToken } from 'micromark-util-symbol/types';
-import { push } from 'micromark-util-chunked';
 import {
   markdownLineEnding,
   markdownLineEndingOrSpace,
   markdownSpace,
 } from 'micromark-util-character';
 import { factorySpace } from 'micromark-factory-space';
-
-import * as wikirefs from 'wikirefs';
-
-import type { OptAttr, WikiRefsOptions } from '../util/types';
 import {
   markdownBullet,
   refTypeUsableCharCodes,
@@ -24,14 +21,6 @@ import {
 
 
 export function syntaxWikiAttrs(opts?: Partial<WikiRefsOptions>): Extension {
-  // todo: delete
-  // // default opts
-  // const defaults = {
-  //   attrs: {
-  //     title: 'Attributes',
-  //   } as OptAttr,
-  // };
-  // const fullOpts = merge(defaults, opts);
 
   const flow: ConstructRecord = {} as ConstructRecord;
   /* eslint-disable indent */
@@ -59,143 +48,51 @@ export function syntaxWikiAttrs(opts?: Partial<WikiRefsOptions>): Extension {
   // construct functions
 
   function resolveWikiAttrs(this: Resolver, events: Event[], context: TokenizeContext): Event[] {
+    let useCaml: boolean = false;
     // current index
     let index: number = -1;
-    // track wikiattr events
-    const attrEnterEvents: number[] = [];
-    const attrExitEvents: number[] = [];
-    const attrEvents: number[] = [];
-    // markers, newlines, etc. are completely removed
-    const attrToss: number[] = [];
 
-    ////
-    // caml resolver interop
-    ////
-    // check if events includes a caml token and return if it does -- use caml resolver instead
+    // check if events includes a caml token and return if it does -- use caml resolution instead
     while (++index < events.length) {
       if (events[index][1].type.indexOf('caml') === 0) {
-        return events;
-      } else {
-        // perform conversion here
+        useCaml = true;
       }
     }
-    // reset index for actual run-through
+
+    // restart
     index = -1;
 
-    // util:
-    // push, splice, sliceSerialize
-    // collect indices of relevant attr events
+    // since we're still here, we are using caml and need to rename some tokens...
     while (++index < events.length) {
-      // mark markers and wikiattr newlines for deletion
-      // (this will also remove wikilink markers)
-      // const isWikiType: boolean = (events[index][1].type.indexOf('wiki') === 0);
-      // const isMarkerType: boolean = (events[index][1].type.indexOf('Marker') > 0);
-      // const isWikiLineEnding: boolean = (events[index][1].type === WikiRefToken.listLineEnding);
-      // if ((isWikiType && isMarkerType) || isWikiLineEnding) {
-      //   attrToss.push(index);
-      //   // todo: 'data'...?
-      //   // ref: https://github.com/micromark/micromark/blob/main/packages/micromark-core-commonmark/dev/lib/label-end.js#L52
-      //   token.type = UnifiedTypeToken.data;
-      // }
       // convert wikiattr token types to caml-friendly token types
       if (events[index][1].type.indexOf(WikiRefToken.wikiAttr) === 0) {
-        // markers
-        // data
         switch (events[index][1].type) {
         case WikiRefToken.wikiAttr:
           if (events[index][0] === 'enter') {
-            events[index][1].type = 'wikiAttrBox';
-            attrEnterEvents.push(index);
+            if (useCaml) {
+              events[index][1].type = 'attrBox';
+            } else {
+              events[index][1].type = 'wikiAttrBox';
+            }
           }
-          // if an exit attrs is found: change name, when to update locations...? do i need to update locations?
           if (events[index][0] === 'exit') {
-            events[index][1].type = 'wikiAttrBox';
-            attrExitEvents.push(index);
+            if (useCaml) {
+              events[index][1].type = 'attrBox';
+            } else {
+              events[index][1].type = 'wikiAttrBox';
+            }
           }
           break;
         case WikiRefToken.wikiAttrTypeTxt:
           events[index][1].type = 'wikiAttrKey';
-          attrEvents.push(index);
           break;
         case WikiRefToken.wikiAttrFileNameTxt:
           events[index][1].type = 'wikiAttrVal';
-          attrEvents.push(index);
-          break;
-        // todo: perform type re-name below when we build the attrs section...
-        // type name-changes seem to percolate farther than just the current event,
-        // if that happens, indices should still be tracked.
-        case 'wikiAttrBox':
-          if (events[index][0] === 'enter') {
-            attrEnterEvents.push(index);
-          }
-          // if an exit attrs is found: change name, when to update locations...? do i need to update locations?
-          if (events[index][0] === 'exit') {
-            attrExitEvents.push(index);
-          }
-          break;
-        case 'wikiAttrKey':
-          attrEvents.push(index);
-          break;
-        case 'wikiAttrVal':
-          attrEvents.push(index);
           break;
         default: { break; }
         }
       }
     }
-
-    // make sure attrs section enter, key/val, and exit all exist //
-
-    assert(
-      !((attrEvents.length === 0)
-      &&
-      ((attrEnterEvents.length !== 0) || (attrExitEvents.length === 0))
-      ),
-      'attr key/val tokens expected',
-    );
-    assert(
-      !((attrEvents.length > 0) && (attrEnterEvents.length === 0)),
-      'wikiattrs enter token expected -- if you are using remark-caml, there might be a conflict',
-    );
-    assert(
-      !((attrEvents.length > 0) && (attrExitEvents.length === 0)),
-      'wikiattrs exit token expected -- if you are using remark-caml, there might be a conflict',
-    );
-
-    // build attrbox //
-
-    // todo?
-    // type: (string | Event | TokenizeContext)[][]
-    let attrbox: any = [];
-    // enter attrbox
-    attrbox = push(attrbox, [['enter', events[attrEnterEvents[0]][1], context]]);
-    // attr keys/vals
-    for (const attr of attrEvents) {
-      // 0: 'enter' or 'exit'
-      // 1: construct ('wikiAttrKey' or 'wikiAttrVal')
-      // 2: 'context'
-      attrbox = push(attrbox, [[events[attr][0], events[attr][1], context]]);
-    }
-    // exit attrbox
-    attrbox = push(attrbox, [['exit', events[attrExitEvents[attrExitEvents.length - 1]][1], context]]);
-    /* eslint-disable indent */
-    // remove all attr events from original events array //
-    const toss: number[] = attrToss.concat(attrEnterEvents)
-                                   .concat(attrEvents)
-                                   .concat(attrExitEvents);
-    /* eslint-enable indent */
-    for (let i = (events.length - 1); i >= 0; i--) {
-      if (toss.includes(i)) {
-        events.splice(i, 1);
-      }
-      // todo: 'data'...?
-      // ref: https://github.com/micromark/micromark/blob/main/packages/micromark-core-commonmark/dev/lib/label-end.js#L52
-      // token.type = UnifiedTypeToken.data;
-    }
-
-    // stick attr events to front of events array //
-
-    events.splice(0, 0, ...attrbox); // 'unshift'
     return events;
   }
 

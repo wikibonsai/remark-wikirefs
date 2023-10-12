@@ -41,22 +41,14 @@ Specific serialization examples below...
 
 ### WikiAttrs
 
-The serialized result will be the following.  To get an abstract syntax tree, use `mdast-util-wikirefs` instead.
+The serialized result will be the following. To get an abstract syntax tree, use [`mdast-util-wikirefs`](https://github.com/wikibonsai/remark/wikirefs/tree/main/mdast-util-wikirefs) instead.
 
 ```markdown
 :attrtype::[[fname]]
 
 ```
 
-```html
-<aside class="attrbox">
-<span class="attrbox-title">Attributes</span>
-    <dl>
-    <dt>attrtype</dt>
-        <dd><a class="attrd wikilink reftype__attrtype doctype__doctype" href="/fname-url" data-href="/fname-url">title</a></dd>
-    </dl>
-</aside>
-```
+While data is extracted and stored in data tokens, no HTML is generated at the `micromark` level. To render directly to html, use [`mdast-util-wikirefs`](https://github.com/wikibonsai/remark/wikirefs/tree/main/mdast-util-wikirefs).
 
 To only use `wikiattr` constructs:
 
@@ -66,7 +58,7 @@ import { syntaxWikiAttrs, htmlWikiAttrs } from 'micromark-extension-wikirefs';
 
 let content = micromark(':attrtype::[[fname]]\n', {
     extensions: [syntaxWikiAttrs()],
-    htmlExtensions: [htmlWikiAttrs()]
+    htmlExtensions: [htmlWikiAttrs()],
 });
 ```
 

@@ -1,4 +1,6 @@
-import { Processor } from 'unified';
+import type * as Uni from 'unist';
+import type { Processor, Transformer } from 'unified';
+import type { AttrBoxNode } from 'mdast-util-wikirefs';
 import {
   syntaxWikiRefs,
   syntaxWikiAttrs,
@@ -7,6 +9,7 @@ import {
   WikiRefsOptions,
 } from 'micromark-extension-wikirefs';
 import {
+  initWikiAttrBox,
   fromMarkdownWikiRefs,
   toMarkdownWikiRefs,
   fromMarkdownWikiAttrs,
@@ -20,7 +23,8 @@ import {
 import { remarkV13Warning } from './warn';
 
 
-export function remarkWikiRefs(this: Processor, opts?: Partial<WikiRefsOptions>): void {
+export function remarkWikiRefs(this: Processor, opts?: Partial<WikiRefsOptions>): Transformer<Uni.Parent, Uni.Node> {
+  const doRenderAttrBox: boolean = opts?.attrs?.render ?? true;
   const data: any = this.data();
 
   // warn for earlier versions
@@ -34,9 +38,22 @@ export function remarkWikiRefs(this: Processor, opts?: Partial<WikiRefsOptions>)
     if (data[field]) { data[field].push(value); }
     else { data[field] = [value]; }
   }
+
+  // (for wikiattrs)
+  // ref: https://github.com/remarkjs/remark-toc/blob/main/lib/index.js#L36
+  return function (tree: Uni.Parent): void {
+    if (doRenderAttrBox) {
+      const attrbox: AttrBoxNode | undefined = initWikiAttrBox(tree, opts);
+      // place attrbox at the beginning of the tree content
+      // @ts-expect-error: placing AttrBoxNode where Node type expected
+      if (attrbox !== undefined) { tree.children.unshift(attrbox); }
+      // todo: test to ensure no existence of caml tokens either...?
+    }
+  };
 }
 
-export function remarkWikiAttrs(this: Processor, opts?: Partial<WikiRefsOptions>): void {
+export function remarkWikiAttrs(this: Processor, opts?: Partial<WikiRefsOptions>): Transformer<Uni.Parent, Uni.Node> {
+  const doRenderAttrBox: boolean = opts?.attrs?.render ?? true;
   const data: any = this.data();
 
   // warn for earlier versions
@@ -50,6 +67,17 @@ export function remarkWikiAttrs(this: Processor, opts?: Partial<WikiRefsOptions>
     if (data[field]) { data[field].push(value); }
     else { data[field] = [value]; }
   }
+
+  // ref: https://github.com/remarkjs/remark-toc/blob/main/lib/index.js#L36
+  return function (tree: Uni.Parent): void {
+    if (doRenderAttrBox) {
+      const attrbox: AttrBoxNode | undefined = initWikiAttrBox(tree, opts);
+      // place attrbox at the beginning of the tree content
+      // @ts-expect-error: placing AttrBoxNode where Node type expected
+      if (attrbox !== undefined) { tree.children.unshift(attrbox); }
+      // todo: test to ensure no existence of caml tokens either...?
+    }
+  };
 }
 
 export function remarkWikiLinks(this: Processor, opts?: Partial<WikiRefsOptions>): void {

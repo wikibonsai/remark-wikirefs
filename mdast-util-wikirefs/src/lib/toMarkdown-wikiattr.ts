@@ -1,25 +1,31 @@
-import { merge } from 'lodash-es';
-import * as wikirefs from 'wikirefs';
-import * as Uni from 'unist';
 import type {
   Handlers,
   Options as ToMarkdownExtension,
 } from 'mdast-util-to-markdown';
 import type { ConstructName, Context, Handle, SafeOptions } from 'mdast-util-to-markdown';
-import { safe } from 'mdast-util-to-markdown/lib/util/safe.js';
 import type {
   DefaultsWikiRefs,
   DefaultsWikiAttrs,
   WikiAttrData,
   WikiRefsOptions,
 } from 'micromark-extension-wikirefs';
-import { defaultsWikiRefs, defaultsWikiAttrs } from 'micromark-extension-wikirefs';
+import type { AttrBoxDataNode, AttrBoxNode } from '../util/types';
 
-import type { AttrBoxNode } from '../util/types';
+import { merge } from 'lodash-es';
+import * as wikirefs from 'wikirefs';
+import * as Uni from 'unist';
+import { safe } from 'mdast-util-to-markdown/lib/util/safe.js';
+import { defaultsWikiRefs, defaultsWikiAttrs } from 'micromark-extension-wikirefs';
 
 
 export function toMarkdownWikiAttrs(opts: Partial<WikiRefsOptions> = {}): ToMarkdownExtension {
   const fullOpts: DefaultsWikiRefs & DefaultsWikiAttrs = merge(defaultsWikiRefs(), defaultsWikiAttrs(), opts);
+  // 'defaults' ensure 'fullOpts.attrs' will be populated above
+  const format: string = fullOpts.attrs.toMarkdown.format;
+  const listKind: string = fullOpts.attrs.toMarkdown.listKind;
+  const prefixed: boolean = fullOpts.attrs.toMarkdown.prefixed;
+
+  // let attrboxFound: boolean = false;
 
   return {
     // TODO: I don't fully understand what this does, but I did my
@@ -37,26 +43,47 @@ export function toMarkdownWikiAttrs(opts: Partial<WikiRefsOptions> = {}): ToMark
       // that the handler will be passed nodes of a specific type
 
       // note: name should match 'Node.type'
-      attrbox: handler as Handle,
+      // attrbox: handleNode as Handle,
+      // note: 'case-conversion' <-> caseConversion seems to not be working...
+      'attrbox-data': handleData as Handle,
+      attrboxData: handleData as Handle,
     } as Partial<Handlers>,
   };
 
-  function handler(
-    node: AttrBoxNode,
+  // note: this handler will generate markdown from the in-place data
+  function handleData(
+    node: (AttrBoxDataNode),
     _: Uni.Parent | null | undefined,
     context: Context,
   ): string {
-    const exit = context.enter('attrbox' as ConstructName);
+    const exit = context.enter('attrbox-data' as ConstructName);
+    const value: string = buildMkdn(node.data.items, context);
+    // const value: string = (!attrboxFound) ? buildMkdn(node.data.items, context) : '';
+    exit();
+    return value;
+  }
 
-    // 'defaults' ensure 'fullOpts.attrs' will be populated above
-    const format: string = fullOpts.attrs.toMarkdown.format;
-    const listKind: string = fullOpts.attrs.toMarkdown.listKind;
-    const prefixed: boolean = fullOpts.attrs.toMarkdown.prefixed;
+  // note: this handler will generate markdown from the content's top-level attrbox
+  // function handleNode(
+  //   node: (AttrBoxNode),
+  //   _: Uni.Parent | null | undefined,
+  //   context: Context,
+  // ): string {
+  //   attrboxFound = true;
 
+  //   const exit = context.enter('attrbox' as ConstructName);
+  //   const value: string = buildMkdn(node.data.items, context);
+
+  //   exit();
+  //   return value;
+  // }
+
+  function buildMkdn(wikiattrs: any, context: Context): string {
     // init vars / build string value
     let value: string = '';
 
-    for (const [attrtype, items] of Object.entries(node.data.items)) {
+    for (const [attrtype, wikiattr] of Object.entries(wikiattrs)) {
+      const wikiAttrPayLoad: WikiAttrData[] = wikiattr as WikiAttrData[];
       // attrtype / key
       /* eslint-disable indent */
       const nodeAttrType: string = safe(
@@ -76,17 +103,17 @@ export function toMarkdownWikiAttrs(opts: Partial<WikiRefsOptions> = {}): ToMark
         if (format === 'pad') { value += ' '; }
       }
       // filenames / items / values
-      for (let i = 0; i < items.length; i++) {
-        const isLastItem: boolean = (i === (items.length - 1));
+      for (let i = 0; i < wikiAttrPayLoad.length; i++) {
+        const isLastItem: boolean = (i === (wikiAttrPayLoad.length - 1));
         /* eslint-disable indent */
         const nodeFileName: string = safe(
                                             context,
-                                            (<WikiAttrData> items[i]).filename,
+                                            wikiAttrPayLoad[i].filename,
                                             { before: '[', after: ']' } as SafeOptions,
                                           );
         /* eslint-enable indent */
         // single item or list comma-separated
-        if ((items.length === 1) || (listKind === 'comma')) {
+        if ((wikiAttrPayLoad.length === 1) || (listKind === 'comma')) {
           value += (wikirefs.CONST.MARKER.OPEN + nodeFileName + wikirefs.CONST.MARKER.CLOSE);
           if (!isLastItem) {
             value += ',';
@@ -94,7 +121,7 @@ export function toMarkdownWikiAttrs(opts: Partial<WikiRefsOptions> = {}): ToMark
           }
         }
         // multiple items, list mkdn-separated
-        if ((items.length > 1) && listKind === 'mkdn') {
+        if ((wikiAttrPayLoad.length > 1) && listKind === 'mkdn') {
           value += ('\n' + '- ' + wikirefs.CONST.MARKER.OPEN + nodeFileName + wikirefs.CONST.MARKER.CLOSE);
         }
         // add last newline after last item
@@ -103,8 +130,6 @@ export function toMarkdownWikiAttrs(opts: Partial<WikiRefsOptions> = {}): ToMark
         }
       }
     }
-
-    exit();
     return value;
   }
 }
