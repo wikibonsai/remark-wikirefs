@@ -415,7 +415,7 @@ let processor = unified()
 
 ## Syntax
 
-For more on syntax specification, see the [wikirefs](https://github.com/wikibonsai/wikirefs) repo.
+For syntax specifications, see the [wikirefs-spec](https://github.com/wikibonsai/wikirefs/tree/main/spec) repo.
 
 ## Options
 

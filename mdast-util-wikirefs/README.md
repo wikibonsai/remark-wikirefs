@@ -522,6 +522,10 @@ let markdownString = toMarkdown(ast, {
 }).trim();
 ```
 
+## Syntax
+
+For syntax specifications, see the [wikirefs-spec](https://github.com/wikibonsai/wikirefs/tree/main/spec) repo.
+
 ## Options
 
 ### `mdast` Options
